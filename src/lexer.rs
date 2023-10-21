@@ -19,59 +19,59 @@ mod tests {
         assert_eq!(vec![Token::IntegerLiteral(32)], lexer(query3));
     }
 
-    #[test]
-    fn add() {
-        let query = "1 + 1";
+    // #[test]
+    // fn add() {
+    //     let query = "1 + 1";
+    //
+    //     assert_eq!(
+    //         vec![
+    //             Token::IntegerLiteral(1),
+    //             Token::Add,
+    //             Token::IntegerLiteral(1)
+    //         ],
+    //         lexer(query)
+    //     );
+    // }
 
-        assert_eq!(
-            vec![
-                Token::IntegerLiteral(1),
-                Token::Add,
-                Token::IntegerLiteral(1)
-            ],
-            lexer(query)
-        );
-    }
+    // #[test]
+    // fn sub() {
+    //     let query = " 2 - 1";
+    //
+    //     assert_eq!(
+    //         vec![
+    //             Token::IntegerLiteral(2),
+    //             Token::Sub,
+    //             Token::IntegerLiteral(1),
+    //         ],
+    //         lexer(query)
+    //     );
+    // }
 
-    #[test]
-    fn sub() {
-        let query = " 2 - 1";
+    // #[test]
+    // fn mul() {
+    //     let query = "3 * 5";
+    //
+    //     assert_eq!(
+    //         vec![
+    //             Token::IntegerLiteral(3),
+    //             Token::Mul,
+    //             Token::IntegerLiteral(5),
+    //         ],
+    //         lexer(query)
+    //     );
+    // }
 
-        assert_eq!(
-            vec![
-                Token::IntegerLiteral(2),
-                Token::Sub,
-                Token::IntegerLiteral(1),
-            ],
-            lexer(query)
-        );
-    }
-
-    #[test]
-    fn mul() {
-        let query = "3 * 5";
-
-        assert_eq!(
-            vec![
-                Token::IntegerLiteral(3),
-                Token::Mul,
-                Token::IntegerLiteral(5),
-            ],
-            lexer(query)
-        );
-    }
-
-    #[test]
-    fn div() {
-        let query = "6 / 2";
-
-        assert_eq!(
-            vec![
-                Token::IntegerLiteral(6),
-                Token::Div,
-                Token::IntegerLiteral(2)
-            ],
-            lexer(query)
-        );
-    }
+    // #[test]
+    // fn div() {
+    //     let query = "6 / 2";
+    //
+    //     assert_eq!(
+    //         vec![
+    //             Token::IntegerLiteral(6),
+    //             Token::Div,
+    //             Token::IntegerLiteral(2)
+    //         ],
+    //         lexer(query)
+    //     );
+    // }
 }

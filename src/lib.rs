@@ -1,11 +1,11 @@
 use std::{
-    fs::File,
-    io::{Read, Write},
+    fs::{self, File},
+    io::Write,
 };
 
 pub struct Config {
-    source: String,
-    assembly: String,
+    source_file_path: String,
+    assembly_file_path: String,
 }
 
 impl Config {
@@ -18,25 +18,19 @@ impl Config {
         let output_file_path = args[2].clone();
 
         Ok(Config {
-            source: input_file_path,
-            assembly: output_file_path,
+            source_file_path: input_file_path,
+            assembly_file_path: output_file_path,
         })
     }
 }
 
 pub fn run(input: Config) -> Result<(), String> {
-    let mut input_file = match File::open(input.source) {
+    let contents = match fs::read_to_string(input.source_file_path) {
         Ok(it) => it,
         Err(err) => return Err(err.to_string()),
     };
 
-    let mut output_file = match File::create(input.assembly) {
-        Ok(it) => it,
-        Err(err) => return Err(err.to_string()),
-    };
-
-    let mut contents = String::new();
-    match input_file.read_to_string(&mut contents) {
+    let mut output_file = match File::create(input.assembly_file_path) {
         Ok(it) => it,
         Err(err) => return Err(err.to_string()),
     };

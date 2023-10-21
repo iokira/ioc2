@@ -1,7 +1,7 @@
-type Num = usize;
+pub type Num = usize;
 
 #[derive(Debug, PartialEq)]
-enum Token {
+pub enum Token {
     Variable(Variable),
     IntegerLiteral(Num),
     Semicolon,
@@ -21,6 +21,6 @@ enum Token {
 }
 
 #[derive(Debug, PartialEq)]
-struct Variable {
+pub struct Variable {
     name: String,
 }

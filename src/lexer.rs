@@ -20,8 +20,7 @@ mod tests {
     }
 
     fn add() {
-        let query1 = "1 + 1";
-        let query2 = "12 + 34";
+        let query = "1 + 1";
 
         assert_eq!(
             vec![
@@ -29,15 +28,20 @@ mod tests {
                 Token::Add,
                 Token::IntegerLiteral(1)
             ],
-            lexer(query1)
+            lexer(query)
         );
+    }
+
+    fn sub() {
+        let query = " 2 - 1";
+
         assert_eq!(
             vec![
-                Token::IntegerLiteral(12),
-                Token::Add,
-                Token::IntegerLiteral(34)
+                Token::IntegerLiteral(2),
+                Token::Sub,
+                Token::IntegerLiteral(1),
             ],
-            lexer(query2)
+            lexer(query)
         );
     }
 }

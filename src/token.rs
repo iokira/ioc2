@@ -1,8 +1,8 @@
 #[derive(Debug, PartialEq)]
 enum Token {
-    Variable,
-    Semicolon,
+    Variable(Variable),
     IntegerLiteral,
+    Semicolon,
     Equal,
     Equality,
     Noneequality,
@@ -16,4 +16,9 @@ enum Token {
     Div,
     LParen,
     RParen,
+}
+
+#[derive(Debug, PartialEq)]
+struct Variable {
+    name: String,
 }

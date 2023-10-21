@@ -1,7 +1,11 @@
+use crate::lexer::lexer;
 use std::{
     fs::{self, File},
     io::Write,
 };
+
+mod lexer;
+mod token;
 
 pub struct Config {
     source_file_path: String,
@@ -29,6 +33,8 @@ pub fn run(input: Config) -> Result<(), String> {
         Ok(it) => it,
         Err(err) => return Err(err.to_string()),
     };
+
+    let tokens = lexer(&contents);
 
     let mut output_file = match File::create(input.assembly_file_path) {
         Ok(it) => it,

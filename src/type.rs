@@ -1,7 +1,9 @@
+type Num = usize;
+
 #[derive(Debug, PartialEq)]
 enum Token {
     Variable(Variable),
-    IntegerLiteral,
+    IntegerLiteral(Num),
     Semicolon,
     Equal,
     Equality,

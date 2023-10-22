@@ -326,4 +326,40 @@ mod tests {
             lexer(query)
         );
     }
+
+    #[test]
+    fn lexer_test() {
+        let query1 = "1 + 10 - 123 * / == abc = d_ef != <= < >= > ();";
+        let query2 = "abc$";
+
+        assert_eq!(
+            Ok(vec![
+                Token::Integer(1),
+                Token::Add,
+                Token::Integer(10),
+                Token::Sub,
+                Token::Integer(123),
+                Token::Mul,
+                Token::Div,
+                Token::Equality,
+                Token::Ident(Ident {
+                    name: "abc".to_string()
+                }),
+                Token::Equal,
+                Token::Ident(Ident {
+                    name: "d_ef".to_string()
+                }),
+                Token::Noneequality,
+                Token::LessOrEqual,
+                Token::Less,
+                Token::GreaterOrEqual,
+                Token::Greater,
+                Token::LParen,
+                Token::RParen,
+                Token::Semicolon,
+            ]),
+            lexer(query1)
+        );
+        assert_eq!(Err(TokenError::InvailedChar('$')), lexer(query2));
+    }
 }

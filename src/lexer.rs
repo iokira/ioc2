@@ -4,6 +4,10 @@ pub fn lexer(input: &str) -> Result<Vec<Token>, ErrorToken> {
     unimplemented!()
 }
 
+fn is_ident_char(ch: char) -> bool {
+    ch.is_alphabetic() || ch == '_'
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

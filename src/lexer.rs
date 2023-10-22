@@ -46,11 +46,15 @@ fn tokenize_operator(s: &str) -> Result<(Token, usize), TokenError> {
 }
 
 fn count_int(s: &str) -> usize {
-    count(s, |c: char| c.is_digit(10))
+    count(s, |c| c.is_digit(10))
 }
 
 fn count_ident(s: &str) -> usize {
-    count(s, |c: char| is_ident_char(c))
+    count(s, |c| is_ident_char(c))
+}
+
+fn count_whitespace(s: &str) -> usize {
+    count(s, |c| c.is_whitespace())
 }
 
 fn count(s: &str, pred: fn(char) -> bool) -> usize {

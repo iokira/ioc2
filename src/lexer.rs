@@ -1,11 +1,11 @@
 use crate::token::{ErrorToken, Token};
 
-pub fn lexer(input: &str) -> Result<Vec<Token>, ErrorToken> {
+pub fn lexer(s: &str) -> Result<Vec<Token>, ErrorToken> {
     unimplemented!()
 }
 
-fn is_ident_char(ch: char) -> bool {
-    ch.is_alphabetic() || ch == '_'
+fn is_ident_char(c: char) -> bool {
+    c.is_alphabetic() || c == '_'
 }
 
 #[cfg(test)]

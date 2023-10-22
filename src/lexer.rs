@@ -123,6 +123,33 @@ mod tests {
         assert_eq!(Err(TokenError), tokenize_ident(s3));
     }
 
+    #[test]
+    fn expect_str_test() {
+        let s1 = "abcde";
+        let s2 = "a1 b2";
+
+        assert_eq!(true, expect_str(s1, "abc"));
+        assert_eq!(false, expect_str(s2, "a1b2"));
+    }
+
+    #[test]
+    fn expect_int_test() {
+        let s1 = "123";
+        let s2 = "abc";
+
+        assert_eq!(true, expect_int(s1));
+        assert_eq!(false, expect_int(s2));
+    }
+
+    #[test]
+    fn expect_ident_test() {
+        let s1 = "abc";
+        let s2 = "123";
+
+        assert_eq!(true, expect_ident(s1));
+        assert_eq!(false, expect_ident(s2));
+    }
+
     // #[test]
     // fn one_integer() {
     //     let query1 = "0";

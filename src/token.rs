@@ -26,10 +26,7 @@ pub struct Ident {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct ErrorToken {
-    pub invailed_char: char,
-    pub position: usize,
-}
+pub struct TokenError;
 
 impl From<String> for Token {
     fn from(value: String) -> Self {

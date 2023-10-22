@@ -30,3 +30,23 @@ pub struct ErrorToken {
     invailed_char: char,
     position: usize,
 }
+
+impl From<String> for Token {
+    fn from(value: String) -> Self {
+        Token::Ident(Ident { name: value })
+    }
+}
+
+impl<'a> From<&'a str> for Token {
+    fn from(value: &'a str) -> Self {
+        Token::Ident(Ident {
+            name: value.to_string(),
+        })
+    }
+}
+
+impl From<Num> for Token {
+    fn from(value: Num) -> Self {
+        Token::Integer(value)
+    }
+}

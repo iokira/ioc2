@@ -2,7 +2,7 @@ use crate::token::{Ident, Int, Token, TokenError};
 
 pub fn lexer(s: &str) -> Result<Vec<Token>, TokenError> {
     fn go(s: &str, v: Vec<Token>) -> Result<Vec<Token>, TokenError> {
-        if s.len() == 0 {
+        if s.is_empty() {
             Ok(v)
         } else if expect_whitespace(s) {
             go(&s[count_whitespace(s)..], v)
@@ -18,25 +18,23 @@ pub fn lexer(s: &str) -> Result<Vec<Token>, TokenError> {
             } else {
                 return Err(TokenError::TokenizeError);
             }
-        } else if expect_operators(s) != "" {
+        } else if !expect_operators(s).is_empty() {
             if let Ok((token, size)) = tokenize_operator(s) {
                 go(&s[size..], [v, vec![token]].concat())
             } else {
                 return Err(TokenError::TokenizeError);
             }
+        } else if let Some(c) = s.chars().next() {
+            return Err(TokenError::InvailedChar(c));
         } else {
-            if let Some(c) = s.chars().next() {
-                return Err(TokenError::InvailedChar(c));
-            } else {
-                return Err(TokenError::TokenizeError);
-            }
+            return Err(TokenError::TokenizeError);
         }
     }
     go(s, vec![])
 }
 
 fn tokenize_int(s: &str) -> Result<(Token, usize), TokenError> {
-    let num = &s[..count_int(&s)];
+    let num = &s[..count_int(s)];
     match num.parse::<Int>() {
         Ok(n) => Ok((Token::Integer(n), num.len())),
         Err(_) => Err(TokenError::TokenizeError),
@@ -44,7 +42,7 @@ fn tokenize_int(s: &str) -> Result<(Token, usize), TokenError> {
 }
 
 fn tokenize_ident(s: &str) -> Result<(Token, usize), TokenError> {
-    let str = &s[..count_ident(&s)];
+    let str = &s[..count_ident(s)];
     match str.len() {
         0 => Err(TokenError::TokenizeError),
         _ => Ok((
@@ -77,11 +75,11 @@ fn tokenize_operator(s: &str) -> Result<(Token, usize), TokenError> {
 }
 
 fn count_int(s: &str) -> usize {
-    count(s, |c| c.is_digit(10))
+    count(s, |c| c.is_ascii_digit())
 }
 
 fn count_ident(s: &str) -> usize {
-    count(s, |c| is_ident_char(c))
+    count(s, is_ident_char)
 }
 
 fn count_whitespace(s: &str) -> usize {
@@ -121,7 +119,7 @@ fn expect_operators(s: &str) -> &'static str {
         }
     }
 
-    return "";
+    ""
 }
 
 fn expect_whitespace(s: &str) -> bool {
@@ -221,8 +219,8 @@ mod tests {
         let s1 = "abcde";
         let s2 = "a1 b2";
 
-        assert_eq!(true, expect_str(s1, "abc"));
-        assert_eq!(false, expect_str(s2, "a1b2"));
+        assert!(expect_str(s1, "abc"));
+        assert!(!expect_str(s2, "a1b2"));
     }
 
     #[test]
@@ -230,8 +228,8 @@ mod tests {
         let s1 = "123";
         let s2 = "abc";
 
-        assert_eq!(true, expect_int(s1));
-        assert_eq!(false, expect_int(s2));
+        assert!(expect_int(s1));
+        assert!(!expect_int(s2));
     }
 
     #[test]
@@ -239,8 +237,8 @@ mod tests {
         let s1 = "abc";
         let s2 = "123";
 
-        assert_eq!(true, expect_ident(s1));
-        assert_eq!(false, expect_ident(s2));
+        assert!(expect_ident(s1));
+        assert!(!expect_ident(s2));
     }
 
     #[test]
@@ -259,8 +257,8 @@ mod tests {
         let s1 = " abc";
         let s2 = "abc ";
 
-        assert_eq!(true, expect_whitespace(s1));
-        assert_eq!(false, expect_whitespace(s2));
+        assert!(expect_whitespace(s1));
+        assert!(!expect_whitespace(s2));
     }
 
     #[test]
@@ -270,10 +268,10 @@ mod tests {
         let c3 = '_';
         let c4 = '1';
 
-        assert_eq!(true, is_ident_char(c1));
-        assert_eq!(true, is_ident_char(c2));
-        assert_eq!(true, is_ident_char(c3));
-        assert_eq!(false, is_ident_char(c4));
+        assert!(is_ident_char(c1));
+        assert!(is_ident_char(c2));
+        assert!(is_ident_char(c3));
+        assert!(!is_ident_char(c4));
     }
 
     #[test]

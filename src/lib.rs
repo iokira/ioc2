@@ -34,7 +34,7 @@ pub fn run(input: Config) -> Result<(), String> {
         Err(err) => return Err(err.to_string()),
     };
 
-    let tokens = lexer(&contents);
+    let _tokens = lexer(&contents);
 
     let mut output_file = match File::create(input.assembly_file_path) {
         Ok(it) => it,

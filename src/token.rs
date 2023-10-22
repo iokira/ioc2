@@ -26,7 +26,10 @@ pub struct Ident {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct TokenError;
+pub enum TokenError {
+    TokenizeError,
+    InvailedChar(char),
+}
 
 impl From<String> for Token {
     fn from(value: String) -> Self {

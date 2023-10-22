@@ -10,22 +10,26 @@ pub fn lexer(s: &str) -> Result<Vec<Token>, TokenError> {
             if let Ok((token, size)) = tokenize_int(s) {
                 go(&s[size..], [v, vec![token]].concat())
             } else {
-                return Err(TokenError);
+                return Err(TokenError::TokenizeError);
             }
         } else if expect_ident(s) {
             if let Ok((token, size)) = tokenize_ident(s) {
                 go(&s[size..], [v, vec![token]].concat())
             } else {
-                return Err(TokenError);
+                return Err(TokenError::TokenizeError);
             }
         } else if expect_operators(s) != "" {
             if let Ok((token, size)) = tokenize_operator(s) {
                 go(&s[size..], [v, vec![token]].concat())
             } else {
-                return Err(TokenError);
+                return Err(TokenError::TokenizeError);
             }
         } else {
-            return Ok(v);
+            if let Some(c) = s.chars().next() {
+                return Err(TokenError::InvailedChar(c));
+            } else {
+                return Err(TokenError::TokenizeError);
+            }
         }
     }
     go(s, vec![])
@@ -35,14 +39,14 @@ fn tokenize_int(s: &str) -> Result<(Token, usize), TokenError> {
     let num = &s[..count_int(&s)];
     match num.parse::<Int>() {
         Ok(n) => Ok((Token::Integer(n), num.len())),
-        Err(_) => Err(TokenError),
+        Err(_) => Err(TokenError::TokenizeError),
     }
 }
 
 fn tokenize_ident(s: &str) -> Result<(Token, usize), TokenError> {
     let str = &s[..count_ident(&s)];
     match str.len() {
-        0 => Err(TokenError),
+        0 => Err(TokenError::TokenizeError),
         _ => Ok((
             Token::Ident(Ident {
                 name: str.to_string(),
@@ -68,7 +72,7 @@ fn tokenize_operator(s: &str) -> Result<(Token, usize), TokenError> {
         "/" => Ok((Token::Div, 1)),
         "(" => Ok((Token::LParen, 1)),
         ")" => Ok((Token::RParen, 1)),
-        _ => Err(TokenError),
+        _ => Err(TokenError::TokenizeError),
     }
 }
 
@@ -140,7 +144,7 @@ mod tests {
 
         assert_eq!(Ok((Token::Integer(123), 3)), tokenize_int(s1));
         assert_eq!(Ok((Token::Integer(12), 2)), tokenize_int(s2));
-        assert_eq!(Err(TokenError), tokenize_int(s3));
+        assert_eq!(Err(TokenError::TokenizeError), tokenize_int(s3));
     }
 
     #[test]
@@ -167,7 +171,7 @@ mod tests {
             )),
             tokenize_ident(s2)
         );
-        assert_eq!(Err(TokenError), tokenize_ident(s3));
+        assert_eq!(Err(TokenError::TokenizeError), tokenize_ident(s3));
     }
 
     #[test]
@@ -178,7 +182,7 @@ mod tests {
 
         assert_eq!(Ok((Token::Equality, 2)), tokenize_operator(s1));
         assert_eq!(Ok((Token::Equal, 1)), tokenize_operator(s2));
-        assert_eq!(Err(TokenError), tokenize_operator(s3));
+        assert_eq!(Err(TokenError::TokenizeError), tokenize_operator(s3));
     }
 
     #[test]

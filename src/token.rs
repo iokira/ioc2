@@ -1,6 +1,6 @@
 pub type Num = usize;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     Variable(Variable),
     Integer(Num),
@@ -20,7 +20,7 @@ pub enum Token {
     RParen,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Variable {
     name: String,
 }

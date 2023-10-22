@@ -3,7 +3,7 @@ pub type Num = usize;
 #[derive(Debug, PartialEq)]
 pub enum Token {
     Variable(Variable),
-    IntegerLiteral(Num),
+    Integer(Num),
     Semicolon,
     Equal,
     Equality,

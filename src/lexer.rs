@@ -14,9 +14,9 @@ mod tests {
         let query2 = "1";
         let query3 = "32";
 
-        assert_eq!(vec![Token::IntegerLiteral(0)], lexer(query1));
-        assert_eq!(vec![Token::IntegerLiteral(1)], lexer(query2));
-        assert_eq!(vec![Token::IntegerLiteral(32)], lexer(query3));
+        assert_eq!(vec![Token::Integer(0)], lexer(query1));
+        assert_eq!(vec![Token::Integer(1)], lexer(query2));
+        assert_eq!(vec![Token::Integer(32)], lexer(query3));
     }
 
     // #[test]

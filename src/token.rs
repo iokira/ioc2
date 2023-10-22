@@ -27,8 +27,8 @@ pub struct Ident {
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct ErrorToken {
-    invailed_char: char,
-    position: usize,
+    pub invailed_char: char,
+    pub position: usize,
 }
 
 impl From<String> for Token {

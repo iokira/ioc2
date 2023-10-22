@@ -1,9 +1,9 @@
-pub type Num = usize;
+pub type Int = usize;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     Ident(Ident),
-    Integer(Num),
+    Integer(Int),
     Semicolon,
     Equal,
     Equality,
@@ -45,8 +45,8 @@ impl<'a> From<&'a str> for Token {
     }
 }
 
-impl From<Num> for Token {
-    fn from(value: Num) -> Self {
+impl From<Int> for Token {
+    fn from(value: Int) -> Self {
         Token::Integer(value)
     }
 }

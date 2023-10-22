@@ -68,7 +68,7 @@ fn count(s: &str, pred: fn(char) -> bool) -> usize {
 }
 
 fn expect_str(s: &str, expect: &str) -> bool {
-    &s[..expect.len()] == expect
+    s.len() >= expect.len() && &s[..expect.len()] == expect
 }
 
 fn expect_int(s: &str) -> bool {

@@ -2,7 +2,7 @@ pub type Num = usize;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
-    Variable(Variable),
+    Ident(Ident),
     Integer(Num),
     Semicolon,
     Equal,
@@ -21,7 +21,7 @@ pub enum Token {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Variable {
+pub struct Ident {
     name: String,
 }
 

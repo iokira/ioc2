@@ -24,3 +24,9 @@ pub enum Token {
 pub struct Variable {
     name: String,
 }
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct ErrorToken {
+    invailed_char: char,
+    position: usize,
+}

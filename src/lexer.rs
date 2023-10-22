@@ -1,6 +1,6 @@
-use crate::token::Token;
+use crate::token::{ErrorToken, Token};
 
-pub fn lexer(input: &str) -> Vec<Token> {
+pub fn lexer(input: &str) -> Result<Vec<Token>, ErrorToken> {
     unimplemented!()
 }
 
@@ -14,9 +14,9 @@ mod tests {
         let query2 = "1";
         let query3 = "32";
 
-        assert_eq!(vec![Token::Integer(0)], lexer(query1));
-        assert_eq!(vec![Token::Integer(1)], lexer(query2));
-        assert_eq!(vec![Token::Integer(32)], lexer(query3));
+        assert_eq!(Ok(vec![Token::Integer(0)]), lexer(query1));
+        assert_eq!(Ok(vec![Token::Integer(1)]), lexer(query2));
+        assert_eq!(Ok(vec![Token::Integer(32)]), lexer(query3));
     }
 
     // #[test]

@@ -25,6 +25,26 @@ fn tokenize_ident(s: &str) -> Result<(Token, usize), TokenError> {
     }
 }
 
+fn tokenize_operator(s: &str) -> Result<(Token, usize), TokenError> {
+    match expect_operators(s) {
+        ";" => Ok((Token::Semicolon, 1)),
+        "==" => Ok((Token::Equality, 2)),
+        "=" => Ok((Token::Equal, 1)),
+        "!=" => Ok((Token::Noneequality, 2)),
+        "<=" => Ok((Token::LessOrEqual, 2)),
+        "<" => Ok((Token::Less, 1)),
+        ">=" => Ok((Token::GreaterOrEqual, 2)),
+        ">" => Ok((Token::Greater, 1)),
+        "+" => Ok((Token::Add, 1)),
+        "-" => Ok((Token::Sub, 1)),
+        "*" => Ok((Token::Mul, 1)),
+        "/" => Ok((Token::Div, 1)),
+        "(" => Ok((Token::LParen, 1)),
+        ")" => Ok((Token::RParen, 1)),
+        _ => Err(TokenError),
+    }
+}
+
 fn count_int(s: &str) -> usize {
     count(s, |c: char| c.is_digit(10))
 }
@@ -53,6 +73,20 @@ fn expect_int(s: &str) -> bool {
 
 fn expect_ident(s: &str) -> bool {
     count_ident(s) > 0
+}
+
+fn expect_operators(s: &str) -> &'static str {
+    let ops = vec![
+        ";", "==", "=", "!=", "<=", "<", ">=", ">", "+", "-", "*", "/", "(", ")",
+    ];
+
+    for op in ops {
+        if expect_str(s, op) {
+            return op;
+        }
+    }
+
+    return "";
 }
 
 fn is_ident_char(c: char) -> bool {

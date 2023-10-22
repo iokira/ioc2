@@ -22,7 +22,7 @@ pub enum Token {
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Ident {
-    name: String,
+    pub name: String,
 }
 
 #[derive(Debug, PartialEq, Clone)]

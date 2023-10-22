@@ -1,7 +1,28 @@
-use crate::token::{Int, Token, TokenError};
+use crate::token::{Ident, Int, Token, TokenError};
 
 pub fn lexer(_: &str) -> Result<Vec<Token>, TokenError> {
     unimplemented!()
+}
+
+fn tokenize_int(s: &str) -> Result<(Token, usize), TokenError> {
+    let num = &s[..count_int(&s)];
+    match num.parse::<Int>() {
+        Ok(n) => Ok((Token::Integer(n), num.len())),
+        Err(_) => Err(TokenError),
+    }
+}
+
+fn tokenize_ident(s: &str) -> Result<(Token, usize), TokenError> {
+    let str = &s[..count_ident(&s)];
+    match str.len() {
+        0 => Err(TokenError),
+        _ => Ok((
+            Token::Ident(Ident {
+                name: str.to_string(),
+            }),
+            str.len(),
+        )),
+    }
 }
 
 fn count_int(s: &str) -> usize {
@@ -22,9 +43,17 @@ fn count(s: &str, pred: fn(char) -> bool) -> usize {
     go(0, s, pred)
 }
 
-// fn expect(s: &str, expect: &str) -> bool {
-//     &s[..expect.len()] == expect
-// }
+fn expect_str(s: &str, expect: &str) -> bool {
+    &s[..expect.len()] == expect
+}
+
+fn expect_int(s: &str) -> bool {
+    count_int(s) > 0
+}
+
+fn expect_ident(s: &str) -> bool {
+    count_ident(s) > 0
+}
 
 fn is_ident_char(c: char) -> bool {
     c.is_alphabetic() || c == '_'
@@ -57,15 +86,53 @@ mod tests {
     }
 
     #[test]
-    fn one_integer() {
-        let query1 = "0";
-        let query2 = "1";
-        let query3 = "32";
+    fn tokenize_int_test() {
+        let s1 = "123";
+        let s2 = "12 abc";
+        let s3 = "abc 123";
 
-        assert_eq!(Ok(vec![Token::Integer(0)]), lexer(query1));
-        assert_eq!(Ok(vec![Token::Integer(1)]), lexer(query2));
-        assert_eq!(Ok(vec![Token::Integer(32)]), lexer(query3));
+        assert_eq!(Ok((Token::Integer(123), 3)), tokenize_int(s1));
+        assert_eq!(Ok((Token::Integer(12), 2)), tokenize_int(s2));
+        assert_eq!(Err(TokenError), tokenize_int(s3));
     }
+
+    #[test]
+    fn tokenize_ident_test() {
+        let s1 = "abc 123";
+        let s2 = "abc_de 123";
+        let s3 = "12345";
+
+        assert_eq!(
+            Ok((
+                Token::Ident(Ident {
+                    name: "abc".to_string()
+                }),
+                3
+            )),
+            tokenize_ident(s1)
+        );
+        assert_eq!(
+            Ok((
+                Token::Ident(Ident {
+                    name: "abc_de".to_string()
+                }),
+                6
+            )),
+            tokenize_ident(s2)
+        );
+        assert_eq!(Err(TokenError), tokenize_ident(s3));
+    }
+
+    // #[test]
+    // fn one_integer() {
+    //     let query1 = "0";
+    //     let query2 = "1";
+    //     let query3 = "32";
+    //
+    //     assert_eq!(Ok(vec![Token::Integer(0)]), lexer(query1));
+    //     assert_eq!(Ok(vec![Token::Integer(1)]), lexer(query2));
+    //     assert_eq!(Ok(vec![Token::Integer(32)]), lexer(query3));
+    // }
 
     // #[test]
     // fn add() {

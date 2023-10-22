@@ -2,16 +2,16 @@ pub type Int = usize;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
-    Ident(Ident),
     Integer(Int),
+    Ident(Ident),
     Semicolon,
-    Equal,
     Equality,
+    Equal,
     Noneequality,
-    Less,
     LessOrEqual,
-    Greater,
+    Less,
     GreaterOrEqual,
+    Greater,
     Add,
     Sub,
     Mul,

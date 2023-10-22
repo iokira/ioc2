@@ -102,28 +102,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn count_int_test() {
-        let s1 = "123abc";
-        let s2 = "12345";
-        let s3 = "abcde";
-
-        assert_eq!(3, count_int(s1));
-        assert_eq!(5, count_int(s2));
-        assert_eq!(0, count_int(s3));
-    }
-
-    #[test]
-    fn count_ident_test() {
-        let s1 = "abc 123";
-        let s2 = "abc_de 123";
-        let s3 = "12345";
-
-        assert_eq!(3, count_ident(s1));
-        assert_eq!(6, count_ident(s2));
-        assert_eq!(0, count_ident(s3));
-    }
-
-    #[test]
     fn tokenize_int_test() {
         let s1 = "123";
         let s2 = "12 abc";
@@ -162,6 +140,48 @@ mod tests {
     }
 
     #[test]
+    fn tokenize_operator_test() {
+        let s1 = "==abc";
+        let s2 = "=abc";
+        let s3 = "abc";
+
+        assert_eq!(Ok((Token::Equality, 2)), tokenize_operator(s1));
+        assert_eq!(Ok((Token::Equal, 1)), tokenize_operator(s2));
+        assert_eq!(Err(TokenError), tokenize_operator(s3));
+    }
+
+    #[test]
+    fn count_int_test() {
+        let s1 = "123abc";
+        let s2 = "12345";
+        let s3 = "abcde";
+
+        assert_eq!(3, count_int(s1));
+        assert_eq!(5, count_int(s2));
+        assert_eq!(0, count_int(s3));
+    }
+
+    #[test]
+    fn count_ident_test() {
+        let s1 = "abc 123";
+        let s2 = "abc_de 123";
+        let s3 = "12345";
+
+        assert_eq!(3, count_ident(s1));
+        assert_eq!(6, count_ident(s2));
+        assert_eq!(0, count_ident(s3));
+    }
+
+    #[test]
+    fn count_whitespace_test() {
+        let s1 = "   abc";
+        let s2 = "abc";
+
+        assert_eq!(3, count_whitespace(s1));
+        assert_eq!(0, count_whitespace(s2));
+    }
+
+    #[test]
     fn expect_str_test() {
         let s1 = "abcde";
         let s2 = "a1 b2";
@@ -186,6 +206,30 @@ mod tests {
 
         assert_eq!(true, expect_ident(s1));
         assert_eq!(false, expect_ident(s2));
+    }
+
+    #[test]
+    fn expect_operators_test() {
+        let ops = vec![
+            ";", "==", "=", "!=", "<=", "<", ">=", ">", "+", "-", "*", "/", "(", ")",
+        ];
+
+        for op in ops {
+            assert_eq!(op, expect_operators(op));
+        }
+    }
+
+    #[test]
+    fn is_ident_char_test() {
+        let c1 = 'a';
+        let c2 = 'A';
+        let c3 = '_';
+        let c4 = '1';
+
+        assert_eq!(true, is_ident_char(c1));
+        assert_eq!(true, is_ident_char(c2));
+        assert_eq!(true, is_ident_char(c3));
+        assert_eq!(false, is_ident_char(c4));
     }
 
     // #[test]

@@ -1,11 +1,15 @@
 use crate::lexer::lexer;
+use parser::parser;
 use std::{
     fs::{self, File},
     io::Write,
 };
+use token::TokenError::{InvailedChar, TokenizeError};
 
 mod lexer;
+mod parser;
 mod token;
+mod tree;
 
 pub struct Config {
     source_file_path: String,
@@ -34,7 +38,15 @@ pub fn run(input: Config) -> Result<(), String> {
         Err(err) => return Err(err.to_string()),
     };
 
-    let _tokens = lexer(&contents);
+    let tokens = match lexer(&contents) {
+        Ok(tokens) => tokens,
+        Err(e) => match e {
+            TokenizeError => return Err("tokenize error".to_string()),
+            InvailedChar(c) => return Err(format!("tokenize error by {}", c)),
+        },
+    };
+
+    let _trees = parser(tokens);
 
     let mut output_file = match File::create(input.assembly_file_path) {
         Ok(it) => it,

@@ -1,36 +1,32 @@
 use crate::token::{Ident, Int, Token, TokenError};
 
 pub fn lexer(s: &str) -> Result<Vec<Token>, TokenError> {
-    fn go(s: &str, v: Vec<Token>) -> Result<Vec<Token>, TokenError> {
-        if s.is_empty() {
-            Ok(v)
-        } else if expect_whitespace(s) {
-            go(&s[count_whitespace(s)..], v)
-        } else if expect_int(s) {
-            if let Ok((token, size)) = tokenize_int(s) {
-                go(&s[size..], [v, vec![token]].concat())
-            } else {
-                return Err(TokenError::TokenizeError);
+    let go = |tokenize: fn(&str) -> Result<(Token, usize), TokenError>| {
+        if let Ok((token, size)) = tokenize(s) {
+            match lexer(&s[size..]) {
+                Ok(v) => Ok([vec![token], v].concat()),
+                Err(e) => Err(e),
             }
-        } else if expect_ident(s) {
-            if let Ok((token, size)) = tokenize_ident(s) {
-                go(&s[size..], [v, vec![token]].concat())
-            } else {
-                return Err(TokenError::TokenizeError);
-            }
-        } else if !expect_operators(s).is_empty() {
-            if let Ok((token, size)) = tokenize_operator(s) {
-                go(&s[size..], [v, vec![token]].concat())
-            } else {
-                return Err(TokenError::TokenizeError);
-            }
-        } else if let Some(c) = s.chars().next() {
-            return Err(TokenError::InvailedChar(c));
         } else {
-            return Err(TokenError::TokenizeError);
+            Err(TokenError::TokenizeError)
         }
+    };
+
+    if s.is_empty() {
+        Ok(vec![])
+    } else if expect_whitespace(s) {
+        lexer(&s[count_whitespace(s)..])
+    } else if expect_int(s) {
+        go(tokenize_int)
+    } else if expect_ident(s) {
+        go(tokenize_ident)
+    } else if !expect_operators(s).is_empty() {
+        go(tokenize_operator)
+    } else if let Some(c) = s.chars().next() {
+        Err(TokenError::InvailedChar(c))
+    } else {
+        Err(TokenError::TokenizeError)
     }
-    go(s, vec![])
 }
 
 fn tokenize_int(s: &str) -> Result<(Token, usize), TokenError> {

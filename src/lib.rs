@@ -72,15 +72,25 @@ pub fn run(input: Config) -> Result<(), String> {
 
 fn invailed_char_error(source: &str, c: char) -> String {
     let source_splited: Vec<String> = source.split('\n').map(|s| s.to_string()).collect();
-    let irregular_line = match source_splited.into_iter().find(|s| s.contains(c)) {
+    let irregular_line = match source_splited.clone().into_iter().find(|s| s.contains(c)) {
         Some(s) => s,
         None => String::from(""),
+    };
+    let irregular_line_num = match source_splited.into_iter().position(|s| s.contains(c)) {
+        Some(n) => n,
+        None => 0,
     };
     let pos = match irregular_line.find(c) {
         Some(n) => n,
         None => 0,
     };
-    format!("{}\n{}^ invailed char", irregular_line, " ".repeat(pos))
+    format!(
+        "--> {}:{}\n{}\n{}^ invailed char",
+        irregular_line_num,
+        pos,
+        irregular_line,
+        " ".repeat(pos)
+    )
 }
 
 #[cfg(test)]

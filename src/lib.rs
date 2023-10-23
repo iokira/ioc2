@@ -103,7 +103,7 @@ mod tests {
         let c = ':';
 
         assert_eq!(
-            "\treturn a * b:\n             ^ invailed char",
+            "--> 3:13\n\treturn a * b:\n             ^ invailed char",
             invailed_char_error(s, c)
         );
     }

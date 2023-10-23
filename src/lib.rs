@@ -42,7 +42,12 @@ pub fn run(input: Config) -> Result<(), String> {
         Ok(tokens) => tokens,
         Err(e) => match e {
             TokenizeError => return Err("tokenize error".to_string()),
-            InvailedChar(c) => return Err(format!("tokenize error by {}", c)),
+            InvailedChar(c) => {
+                return Err(format!(
+                    "tokenize error\n{}",
+                    invailed_char_error(&contents, c)
+                ))
+            }
         },
     };
 
@@ -63,4 +68,33 @@ pub fn run(input: Config) -> Result<(), String> {
     };
 
     Ok(())
+}
+
+fn invailed_char_error(source: &str, c: char) -> String {
+    let source_splited: Vec<String> = source.split('\n').map(|s| s.to_string()).collect();
+    let irregular_line = match source_splited.into_iter().find(|s| s.contains(c)) {
+        Some(s) => s,
+        None => String::from(""),
+    };
+    let pos = match irregular_line.find(c) {
+        Some(n) => n,
+        None => 0,
+    };
+    format!("{}\n{}^ invailed char", irregular_line, " ".repeat(pos))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::invailed_char_error;
+
+    #[test]
+    fn invailed_char_error_test() {
+        let s = "int main() {\n\tint a = 2;\n\tint b = 3;\n\treturn a * b:\n}";
+        let c = ':';
+
+        assert_eq!(
+            "\treturn a * b:\n             ^ invailed char",
+            invailed_char_error(s, c)
+        );
+    }
 }

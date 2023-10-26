@@ -80,14 +80,8 @@ fn invailed_char_error(source: &str, c: char) -> String {
         Some(s) => s,
         None => String::from(""),
     };
-    let irregular_line_num = match source_splited.into_iter().position(|s| s.contains(c)) {
-        Some(n) => n,
-        None => 0,
-    };
-    let pos = match irregular_line.find(c) {
-        Some(n) => n,
-        None => 0,
-    };
+    let irregular_line_num = source_splited.into_iter().position(|s| s.contains(c)).unwrap_or(0);
+    let pos = irregular_line.find(c).unwrap_or(0);
     format!(
         "--> {}:{}\n{}\n{}^ invailed char",
         irregular_line_num,

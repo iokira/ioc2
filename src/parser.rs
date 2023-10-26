@@ -1,46 +1,46 @@
 use crate::{token::Token, tree::*};
 
-pub fn parser(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+pub fn parser(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 
-fn program(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+fn program(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 
-fn stmt(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+fn stmt(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 
-fn expr(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+fn expr(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 
-fn assign(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+fn assign(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 
-fn equality(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+fn equality(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 
-fn relational(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+fn relational(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 
-fn add(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+fn add(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 
-fn mul(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+fn mul(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 
-fn unary(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+fn unary(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 
-fn primary(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
+fn primary(_tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
     unimplemented!()
 }
 

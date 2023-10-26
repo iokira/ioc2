@@ -6,7 +6,7 @@ pub fn variable_analysis(tokens: Vec<Token>) -> Vec<Token> {
 
 fn extract_variable(tokens: Vec<Token>) -> Vec<Ident> {
     if tokens.is_empty() {
-        return vec![];
+        vec![]
     } else if let Token::Ident(ident) = tokens[0].clone() {
         [vec![ident], extract_variable(tokens[1..].to_vec())].concat()
     } else {

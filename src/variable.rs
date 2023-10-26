@@ -29,7 +29,7 @@ mod tests {
     #[test]
     fn variable_analysis_test() {
         let query = vec![
-            Token::Variable(0),
+            Token::Integer(0),
             Token::Ident(Ident {
                 name: "a".to_string(),
             }),
@@ -37,7 +37,7 @@ mod tests {
         ];
 
         assert_eq!(
-            vec![Token::Integer(0), Token::Variable(8), Token::Add],
+            vec![Token::Integer(0), Token::Variable { offset: 8 }, Token::Add],
             variable_analysis(query)
         );
     }

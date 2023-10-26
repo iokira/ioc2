@@ -4,7 +4,7 @@ pub fn variable_analysis(tokens: Vec<Token>) -> Vec<Token> {
     tokens
 }
 
-pub fn extract_variable(tokens: Vec<Token>) -> Vec<Token> {
+fn extract_variable(tokens: Vec<Token>) -> Vec<Token> {
     if tokens.is_empty() {
         return vec![];
     } else if let Token::Ident(_) = tokens[0] {

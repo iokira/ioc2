@@ -96,7 +96,7 @@ mod tests {
     use super::invailed_char_error;
 
     #[test]
-    fn invailed_char_error_test() {
+    fn invalided_char_error_test() {
         let s = "int main() {\n\tint a = 2;\n\tint b = 3;\n\treturn a * b:\n}";
         let c = ':';
 

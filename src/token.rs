@@ -29,7 +29,7 @@ pub struct Ident {
 #[derive(Debug, PartialEq, Clone)]
 pub enum TokenError {
     TokenizeError,
-    InvailedChar(char),
+    InvalidedChar(char),
 }
 
 impl From<String> for Token {

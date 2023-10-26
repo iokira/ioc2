@@ -23,7 +23,7 @@ pub fn lexer(s: &str) -> Result<Vec<Token>, TokenError> {
     } else if !expect_operators(s).is_empty() {
         go(tokenize_operator)
     } else if let Some(c) = s.chars().next() {
-        Err(TokenError::InvailedChar(c))
+        Err(TokenError::InvalidedChar(c))
     } else {
         Err(TokenError::TokenizeError)
     }
@@ -354,6 +354,6 @@ mod tests {
             ]),
             lexer(query1)
         );
-        assert_eq!(Err(TokenError::InvailedChar('$')), lexer(query2));
+        assert_eq!(Err(TokenError::InvalidedChar('$')), lexer(query2));
     }
 }

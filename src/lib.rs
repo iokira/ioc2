@@ -4,7 +4,7 @@ use std::{
     fs::{self, File},
     io::Write,
 };
-use token::TokenError::{InvailedChar, TokenizeError};
+use token::TokenError::{InvalidedChar, TokenizeError};
 use variable::variable_analysis;
 
 mod lexer;
@@ -42,12 +42,12 @@ pub fn run(input: Config) -> Result<(), String> {
 
     let tokens = match lexer(&contents) {
         Ok(tokens) => tokens,
-        Err(e) => match e {
-            TokenizeError => return Err("tokenize error".to_string()),
-            InvailedChar(c) => {
-                return Err(format!(
+        Err(e) => return match e {
+            TokenizeError => Err("tokenize error".to_string()),
+            InvalidedChar(c) => {
+                Err(format!(
                     "tokenize error\n{}",
-                    invailed_char_error(&contents, c)
+                    invalided_char_error(&contents, c)
                 ))
             }
         },
@@ -74,16 +74,16 @@ pub fn run(input: Config) -> Result<(), String> {
     Ok(())
 }
 
-fn invailed_char_error(source: &str, c: char) -> String {
-    let source_splited: Vec<String> = source.split('\n').map(|s| s.to_string()).collect();
-    let irregular_line = match source_splited.clone().into_iter().find(|s| s.contains(c)) {
+fn invalided_char_error(source: &str, c: char) -> String {
+    let source_split: Vec<String> = source.split('\n').map(|s| s.to_string()).collect();
+    let irregular_line = match source_split.clone().into_iter().find(|s| s.contains(c)) {
         Some(s) => s,
         None => String::from(""),
     };
-    let irregular_line_num = source_splited.into_iter().position(|s| s.contains(c)).unwrap_or(0);
+    let irregular_line_num = source_split.into_iter().position(|s| s.contains(c)).unwrap_or(0);
     let pos = irregular_line.find(c).unwrap_or(0);
     format!(
-        "--> {}:{}\n{}\n{}^ invailed char",
+        "--> {}:{}\n{}\n{}^ invalided char",
         irregular_line_num,
         pos,
         irregular_line,
@@ -93,7 +93,7 @@ fn invailed_char_error(source: &str, c: char) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::invailed_char_error;
+    use super::invalided_char_error;
 
     #[test]
     fn invalided_char_error_test() {
@@ -102,7 +102,7 @@ mod tests {
 
         assert_eq!(
             "--> 3:13\n\treturn a * b:\n             ^ invailed char",
-            invailed_char_error(s, c)
+            invalided_char_error(s, c)
         );
     }
 }

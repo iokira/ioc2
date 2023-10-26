@@ -4,6 +4,7 @@ pub type Int = usize;
 pub enum Token {
     Integer(Int),
     Ident(Ident),
+    Variable(usize),
     Semicolon,
     Equality,
     Equal,

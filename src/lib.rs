@@ -5,11 +5,13 @@ use std::{
     io::Write,
 };
 use token::TokenError::{InvailedChar, TokenizeError};
+use variable::variable_analysis;
 
 mod lexer;
 mod parser;
 mod token;
 mod tree;
+mod variable;
 
 pub struct Config {
     source_file_path: String,
@@ -50,6 +52,8 @@ pub fn run(input: Config) -> Result<(), String> {
             }
         },
     };
+
+    let tokens = variable_analysis(tokens);
 
     let _trees = parser(tokens);
 

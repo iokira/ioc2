@@ -21,7 +21,7 @@ pub enum Token {
     RParen,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, PartialOrd, Ord)]
 pub struct Ident {
     pub name: String,
 }

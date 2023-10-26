@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::token::*;
 
 pub fn variable_analysis(tokens: Vec<Token>) -> Vec<Token> {
@@ -12,6 +14,12 @@ fn extract_variable(tokens: Vec<Token>) -> Vec<Ident> {
     } else {
         extract_variable(tokens[1..].to_vec())
     }
+}
+
+fn deduplicate_variable(idents: Vec<Ident>) -> Vec<Ident> {
+    HashSet::<_>::from_iter(idents.into_iter())
+        .into_iter()
+        .collect::<Vec<Ident>>()
 }
 
 #[cfg(test)]
@@ -49,6 +57,43 @@ mod tests {
                 name: "a".to_string()
             }],
             extract_variable(query)
+        );
+    }
+
+    #[test]
+    fn deduplicate_variable_test() {
+        let query = vec![
+            Ident {
+                name: "a".to_string(),
+            },
+            Ident {
+                name: "b".to_string(),
+            },
+            Ident {
+                name: "b".to_string(),
+            },
+            Ident {
+                name: "c".to_string(),
+            },
+            Ident {
+                name: "c".to_string(),
+            },
+        ];
+
+        assert_eq!(
+            vec![
+                Ident {
+                    name: "a".to_string()
+                },
+                Ident {
+                    name: "b".to_string()
+                },
+                Ident {
+                    name: "c".to_string()
+                },
+            ]
+            .sort(),
+            deduplicate_variable(query).sort()
         );
     }
 }

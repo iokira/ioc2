@@ -6,13 +6,13 @@ pub fn variable_analysis(tokens: Vec<Token>) -> Vec<Token> {
     tokens
 }
 
-fn extract_ident(tokens: Vec<Token>) -> Vec<Ident> {
+fn extract_ident(tokens: &Vec<Token>) -> Vec<Ident> {
     if tokens.is_empty() {
         vec![]
     } else if let Token::Ident(ident) = tokens[0].clone() {
-        [vec![ident], extract_ident(tokens[1..].to_vec())].concat()
+        [vec![ident], extract_ident(&tokens[1..].to_vec())].concat()
     } else {
-        extract_ident(tokens[1..].to_vec())
+        extract_ident(&tokens[1..].to_vec())
     }
 }
 
@@ -74,7 +74,7 @@ mod tests {
             vec![Ident {
                 name: "a".to_string()
             }],
-            extract_ident(query)
+            extract_ident(&query)
         );
     }
 

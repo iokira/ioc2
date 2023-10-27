@@ -2,8 +2,8 @@ use std::collections::HashSet;
 
 use crate::token::*;
 
-pub fn variable_analysis(tokens: Vec<Token>) -> Vec<Token> {
-    tokens
+pub fn variable_analysis(tokens: Vec<Token>) -> Result<Vec<Token>, &'static str> {
+    convert_tokens(tokens)
 }
 
 fn extract_ident(tokens: &Vec<Token>) -> Vec<Ident> {
@@ -42,13 +42,30 @@ fn ident2var(token: Token, idents: &Vec<Ident>) -> Result<Token, &'static str> {
     }
 }
 
+fn convert_tokens(tokens: Vec<Token>) -> Result<Vec<Token>, &'static str> {
+    let idents = deduplicate_variable(extract_ident(&tokens));
+    fn go(tokens: Vec<Token>, idents: Vec<Ident>) -> Result<Vec<Token>, &'static str> {
+        if tokens.is_empty() {
+            return Ok(vec![]);
+        }
+        match ident2var(tokens[0].clone(), &idents) {
+            Ok(t) => match go(tokens[1..].to_vec(), idents) {
+                Ok(ts) => Ok([vec![t], ts].concat()),
+                Err(e) => return Err(e),
+            },
+            Err(e) => return Err(e),
+        }
+    }
+    go(tokens, idents)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn variable_analysis_test() {
-        let query = vec![
+        let query1 = vec![
             Token::Integer(0),
             Token::Ident(Ident {
                 name: "a".to_string(),
@@ -57,8 +74,12 @@ mod tests {
         ];
 
         assert_eq!(
-            vec![Token::Integer(0), Token::Variable { offset: 8 }, Token::Add],
-            variable_analysis(query)
+            Ok(vec![
+                Token::Integer(0),
+                Token::Variable { offset: 8 },
+                Token::Add
+            ]),
+            variable_analysis(query1)
         );
     }
 
@@ -199,6 +220,44 @@ mod tests {
         assert_eq!(
             Err("unexpected ident"),
             ident2var(Token::Ident(ident3), &idents)
+        );
+    }
+
+    #[test]
+    fn convert_tokens_test() {
+        let query = vec![
+            Token::Integer(0),
+            Token::Ident(Ident {
+                name: "a".to_string(),
+            }),
+            Token::Ident(Ident {
+                name: "b".to_string(),
+            }),
+            Token::Add,
+            Token::Ident(Ident {
+                name: "b".to_string(),
+            }),
+            Token::Ident(Ident {
+                name: "c".to_string(),
+            }),
+            Token::Ident(Ident {
+                name: "c".to_string(),
+            }),
+            Token::Add,
+        ];
+
+        assert_eq!(
+            Ok(vec![
+                Token::Integer(0),
+                Token::Variable { offset: 8 },
+                Token::Variable { offset: 16 },
+                Token::Add,
+                Token::Variable { offset: 16 },
+                Token::Variable { offset: 24 },
+                Token::Variable { offset: 24 },
+                Token::Add,
+            ]),
+            convert_tokens(query)
         );
     }
 }

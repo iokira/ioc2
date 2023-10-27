@@ -53,7 +53,10 @@ pub fn run(input: Config) -> Result<(), String> {
         }
     };
 
-    let tokens = variable_analysis(tokens);
+    let tokens = match variable_analysis(tokens) {
+        Ok(tokens) => tokens,
+        Err(e) => return Err(e.to_string()),
+    };
 
     let _trees = parser(tokens);
 

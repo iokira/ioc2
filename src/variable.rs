@@ -30,15 +30,13 @@ fn calc_offset(ident: Ident, idents: &Vec<Ident>) -> Option<usize> {
         .map(|n| (n + 1) * 8)
 }
 
-fn ident2var(token: Token, idents: &Vec<Ident>) -> Option<Token> {
+fn ident2var(token: Token, idents: &Vec<Ident>) -> Result<Token, &'static str> {
     match token {
-        Token::Ident(i) => Some(Token::Variable {
-            offset: match calc_offset(i, idents) {
-                Some(n) => n,
-                None => return None,
-            },
-        }),
-        _ => None,
+        Token::Ident(i) => match calc_offset(i, idents) {
+            Some(n) => Ok(Token::Variable { offset: n }),
+            None => Err("unexpected ident"),
+        },
+        _ => Ok(token),
     }
 }
 
@@ -186,17 +184,20 @@ mod tests {
         let idents = vec![ident0.clone(), ident1.clone(), ident2.clone()];
 
         assert_eq!(
-            Some(Token::Variable { offset: 8 }),
+            Ok(Token::Variable { offset: 8 }),
             ident2var(Token::Ident(ident0), &idents)
         );
         assert_eq!(
-            Some(Token::Variable { offset: 16 }),
+            Ok(Token::Variable { offset: 16 }),
             ident2var(Token::Ident(ident1), &idents)
         );
         assert_eq!(
-            Some(Token::Variable { offset: 24 }),
+            Ok(Token::Variable { offset: 24 }),
             ident2var(Token::Ident(ident2), &idents)
         );
-        assert_eq!(None, ident2var(Token::Ident(ident3), &idents));
+        assert_eq!(
+            Err("unexpected ident"),
+            ident2var(Token::Ident(ident3), &idents)
+        );
     }
 }

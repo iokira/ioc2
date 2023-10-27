@@ -30,6 +30,18 @@ fn calc_offset(ident: Ident, idents: &Vec<Ident>) -> Option<usize> {
         .map(|n| (n + 1) * 8)
 }
 
+fn ident2var(tokens: Token, idents: &Vec<Ident>) -> Option<Token> {
+    match tokens {
+        Token::Ident(i) => Some(Token::Variable {
+            offset: match calc_offset(i, idents) {
+                Some(n) => n,
+                None => return None,
+            },
+        }),
+        _ => None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -155,5 +167,36 @@ mod tests {
                 &query
             )
         );
+    }
+
+    #[test]
+    fn ident2var_test() {
+        let ident0 = Ident {
+            name: "a".to_string(),
+        };
+        let ident1 = Ident {
+            name: "b".to_string(),
+        };
+        let ident2 = Ident {
+            name: "c".to_string(),
+        };
+        let ident3 = Ident {
+            name: "d".to_string(),
+        };
+        let idents = vec![ident0.clone(), ident1.clone(), ident2.clone()];
+
+        assert_eq!(
+            Some(Token::Variable { offset: 8 }),
+            ident2var(Token::Ident(ident0), &idents)
+        );
+        assert_eq!(
+            Some(Token::Variable { offset: 16 }),
+            ident2var(Token::Ident(ident1), &idents)
+        );
+        assert_eq!(
+            Some(Token::Variable { offset: 24 }),
+            ident2var(Token::Ident(ident2), &idents)
+        );
+        assert_eq!(None, ident2var(Token::Ident(ident3), &idents));
     }
 }

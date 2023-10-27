@@ -4,7 +4,7 @@ use std::{
     fs::{self, File},
     io::Write,
 };
-use token::TokenError::{InvalidedChar, TokenizeError};
+use token::TokenError::{InvalidChar, TokenizeError};
 use variable::variable_analysis;
 
 mod lexer;
@@ -42,15 +42,15 @@ pub fn run(input: Config) -> Result<(), String> {
 
     let tokens = match lexer(&contents) {
         Ok(tokens) => tokens,
-        Err(e) => return match e {
-            TokenizeError => Err("tokenize error".to_string()),
-            InvalidedChar(c) => {
-                Err(format!(
+        Err(e) => {
+            return match e {
+                TokenizeError => Err("tokenize error".to_string()),
+                InvalidChar(c) => Err(format!(
                     "tokenize error\n{}",
-                    invalided_char_error(&contents, c)
-                ))
+                    invalid_char_error(&contents, c)
+                )),
             }
-        },
+        }
     };
 
     let tokens = variable_analysis(tokens);
@@ -74,16 +74,19 @@ pub fn run(input: Config) -> Result<(), String> {
     Ok(())
 }
 
-fn invalided_char_error(source: &str, c: char) -> String {
+fn invalid_char_error(source: &str, c: char) -> String {
     let source_split: Vec<String> = source.split('\n').map(|s| s.to_string()).collect();
     let irregular_line = match source_split.clone().into_iter().find(|s| s.contains(c)) {
         Some(s) => s,
         None => String::from(""),
     };
-    let irregular_line_num = source_split.into_iter().position(|s| s.contains(c)).unwrap_or(0);
+    let irregular_line_num = source_split
+        .into_iter()
+        .position(|s| s.contains(c))
+        .unwrap_or(0);
     let pos = irregular_line.find(c).unwrap_or(0);
     format!(
-        "--> {}:{}\n{}\n{}^ invalided char",
+        "--> {}:{}\n{}\n{}^ invalid char",
         irregular_line_num,
         pos,
         irregular_line,
@@ -93,16 +96,16 @@ fn invalided_char_error(source: &str, c: char) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::invalided_char_error;
+    use super::invalid_char_error;
 
     #[test]
-    fn invalided_char_error_test() {
+    fn invalid_char_error_test() {
         let s = "int main() {\n\tint a = 2;\n\tint b = 3;\n\treturn a * b:\n}";
         let c = ':';
 
         assert_eq!(
-            "--> 3:13\n\treturn a * b:\n             ^ invailed char",
-            invalided_char_error(s, c)
+            "--> 3:13\n\treturn a * b:\n             ^ invalid char",
+            invalid_char_error(s, c)
         );
     }
 }

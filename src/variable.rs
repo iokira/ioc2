@@ -22,6 +22,14 @@ fn deduplicate_variable(idents: Vec<Ident>) -> Vec<Ident> {
         .collect::<Vec<Ident>>()
 }
 
+fn calc_offset(ident: Ident, idents: &Vec<Ident>) -> Option<usize> {
+    idents
+        .clone()
+        .into_iter()
+        .position(|i| i == ident)
+        .map(|n| (n + 1) * 8)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -94,6 +102,58 @@ mod tests {
             ]
             .sort(),
             deduplicate_variable(query).sort()
+        );
+    }
+
+    #[test]
+    fn calc_offset_test() {
+        let query = vec![
+            Ident {
+                name: "a".to_string(),
+            },
+            Ident {
+                name: "b".to_string(),
+            },
+            Ident {
+                name: "c".to_string(),
+            },
+        ];
+
+        assert_eq!(
+            Some(8),
+            calc_offset(
+                Ident {
+                    name: "a".to_string()
+                },
+                &query
+            )
+        );
+        assert_eq!(
+            Some(16),
+            calc_offset(
+                Ident {
+                    name: "b".to_string()
+                },
+                &query
+            )
+        );
+        assert_eq!(
+            Some(24),
+            calc_offset(
+                Ident {
+                    name: "c".to_string()
+                },
+                &query
+            )
+        );
+        assert_eq!(
+            None,
+            calc_offset(
+                Ident {
+                    name: "d".to_string()
+                },
+                &query
+            )
         );
     }
 }

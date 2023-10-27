@@ -17,9 +17,11 @@ fn extract_ident(tokens: &Vec<Token>) -> Vec<Ident> {
 }
 
 fn deduplicate_variable(idents: Vec<Ident>) -> Vec<Ident> {
-    HashSet::<_>::from_iter(idents)
+    let mut idents = HashSet::<_>::from_iter(idents)
         .into_iter()
-        .collect::<Vec<Ident>>()
+        .collect::<Vec<Ident>>();
+    idents.sort();
+    idents
 }
 
 fn calc_offset(ident: Ident, idents: &Vec<Ident>) -> Option<usize> {
@@ -99,7 +101,7 @@ mod tests {
         ];
 
         assert_eq!(
-            [
+            vec![
                 Ident {
                     name: "a".to_string()
                 },
@@ -109,9 +111,8 @@ mod tests {
                 Ident {
                     name: "c".to_string()
                 }
-            ]
-            .sort(),
-            deduplicate_variable(query).sort()
+            ],
+            deduplicate_variable(query)
         );
     }
 

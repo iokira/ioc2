@@ -30,8 +30,8 @@ fn calc_offset(ident: Ident, idents: &Vec<Ident>) -> Option<usize> {
         .map(|n| (n + 1) * 8)
 }
 
-fn ident2var(tokens: Token, idents: &Vec<Ident>) -> Option<Token> {
-    match tokens {
+fn ident2var(token: Token, idents: &Vec<Ident>) -> Option<Token> {
+    match token {
         Token::Ident(i) => Some(Token::Variable {
             offset: match calc_offset(i, idents) {
                 Some(n) => n,
@@ -101,7 +101,8 @@ mod tests {
         ];
 
         assert_eq!(
-            [Ident {
+            [
+                Ident {
                     name: "a".to_string()
                 },
                 Ident {
@@ -109,7 +110,8 @@ mod tests {
                 },
                 Ident {
                     name: "c".to_string()
-                }]
+                }
+            ]
             .sort(),
             deduplicate_variable(query).sort()
         );

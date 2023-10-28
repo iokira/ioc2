@@ -218,14 +218,33 @@ mod tests {
 
     #[test]
     fn parser_test() {
-        unimplemented!()
+        let query = variable_analysis(
+            lexer(
+                "
+column = 5;
+row = 40;
+column * row;
+",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+
+        assert_eq!(
+            Ok(vec![
+                Tree::new_tree(NodeKind::Assign, Tree::new_val(8), Tree::new_int(5)),
+                Tree::new_tree(NodeKind::Assign, Tree::new_val(16), Tree::new_int(40)),
+                Tree::new_tree(NodeKind::Mul, Tree::new_val(8), Tree::new_val(16))
+            ]),
+            parser(query)
+        );
     }
 
     #[test]
     fn one_int_test() {
         let query = variable_analysis(lexer("500;").unwrap()).unwrap();
 
-        assert_eq!(Ok(vec![Tree::new_int(500)]), parser(query))
+        assert_eq!(Ok(vec![Tree::new_int(500)]), parser(query));
     }
 
     #[test]

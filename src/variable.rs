@@ -24,15 +24,16 @@ fn deduplicate_variable(idents: Vec<Ident>) -> Vec<Ident> {
     idents
 }
 
-fn calc_offset(ident: Ident, idents: &Vec<Ident>) -> Option<usize> {
+fn calc_offset(ident: Ident, idents: &[Ident]) -> Option<usize> {
     idents
+        .to_owned()
         .clone()
         .into_iter()
         .position(|i| i == ident)
         .map(|n| (n + 1) * 8)
 }
 
-fn ident2var(token: Token, idents: &Vec<Ident>) -> Result<Token, &'static str> {
+fn ident2var(token: Token, idents: &[Ident]) -> Result<Token, &'static str> {
     match token {
         Token::Ident(i) => match calc_offset(i, idents) {
             Some(n) => Ok(Token::Variable { offset: n }),

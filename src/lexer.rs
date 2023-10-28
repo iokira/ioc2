@@ -72,7 +72,7 @@ fn tokenize_operator(s: &str) -> Result<(Token, usize), TokenError> {
     }
 }
 
-fn tokenize_return(s: &str) -> Result<(Token, usize), TokenError> {
+fn tokenize_return(_: &str) -> Result<(Token, usize), TokenError> {
     Ok((Token::Return, 6))
 }
 

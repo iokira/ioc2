@@ -58,7 +58,10 @@ pub fn run(input: Config) -> Result<(), String> {
         Err(e) => return Err(e.to_string()),
     };
 
-    let _trees = parser(tokens);
+    let _trees = match parser(tokens) {
+        Ok(trees) => trees,
+        Err(_) => return Err("parse error".to_string()),
+    };
 
     let mut output_file = match File::create(input.assembly_file_path) {
         Ok(it) => it,

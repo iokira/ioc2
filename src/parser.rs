@@ -201,7 +201,7 @@ fn primary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
         match tokens[0] {
             Token::LParen => match expr(tokens[1..].to_vec()) {
                 Ok((expr, tokens)) => match tokens[0] {
-                    Token::RParen => Ok((expr, tokens)),
+                    Token::RParen => Ok((expr, tokens[1..].to_vec())),
                     _ => Err("expect ')' but disappear".to_string()),
                 },
                 Err(e) => Err(e),
@@ -401,6 +401,20 @@ column * row;
                 NodeKind::Less,
                 Tree::new_int(1),
                 Tree::new_int(2)
+            )]),
+            parser(query)
+        );
+    }
+
+    #[test]
+    fn paren_test() {
+        let (query, _ident_count) = variable_analysis(lexer("2 * (1 + 2);").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Mul,
+                Tree::new_int(2),
+                Tree::new_tree(NodeKind::Add, Tree::new_int(1), Tree::new_int(2))
             )]),
             parser(query)
         );

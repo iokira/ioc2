@@ -42,11 +42,11 @@ impl fmt::Display for Operand {
 }
 
 pub fn program_prologue() -> String {
-    ".intel_syntax noprefix\n".to_string()
+    ".intel_syntax noprefix\n".to_owned()
 }
 
 pub fn main_func() -> String {
-    ".globl main\nmain:\n".to_string()
+    ".globl main\nmain:\n".to_owned()
 }
 
 /// push rbp
@@ -243,5 +243,5 @@ fn less_or_eq(rd: Operand, rn: Operand) -> String {
 }
 
 fn ret() -> String {
-    "\tret\n".to_string()
+    "\tret\n".to_owned()
 }

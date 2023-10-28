@@ -73,7 +73,7 @@ mod tests {
         let query1 = vec![
             Token::Integer(0),
             Token::Ident(Ident {
-                name: "a".to_string(),
+                name: "a".to_owned(),
             }),
             Token::Add,
         ];
@@ -92,14 +92,14 @@ mod tests {
         let query = vec![
             Token::Integer(0),
             Token::Ident(Ident {
-                name: "a".to_string(),
+                name: "a".to_owned(),
             }),
             Token::Add,
         ];
 
         assert_eq!(
             vec![Ident {
-                name: "a".to_string()
+                name: "a".to_owned()
             }],
             extract_ident(&query)
         );
@@ -109,32 +109,32 @@ mod tests {
     fn deduplicate_variable_test() {
         let query = vec![
             Ident {
-                name: "a".to_string(),
+                name: "a".to_owned(),
             },
             Ident {
-                name: "b".to_string(),
+                name: "b".to_owned(),
             },
             Ident {
-                name: "b".to_string(),
+                name: "b".to_owned(),
             },
             Ident {
-                name: "c".to_string(),
+                name: "c".to_owned(),
             },
             Ident {
-                name: "c".to_string(),
+                name: "c".to_owned(),
             },
         ];
 
         assert_eq!(
             vec![
                 Ident {
-                    name: "a".to_string()
+                    name: "a".to_owned()
                 },
                 Ident {
-                    name: "b".to_string()
+                    name: "b".to_owned()
                 },
                 Ident {
-                    name: "c".to_string()
+                    name: "c".to_owned()
                 }
             ],
             deduplicate_variable(query)
@@ -145,13 +145,13 @@ mod tests {
     fn calc_offset_test() {
         let query = vec![
             Ident {
-                name: "a".to_string(),
+                name: "a".to_owned(),
             },
             Ident {
-                name: "b".to_string(),
+                name: "b".to_owned(),
             },
             Ident {
-                name: "c".to_string(),
+                name: "c".to_owned(),
             },
         ];
 
@@ -159,7 +159,7 @@ mod tests {
             Some(8),
             calc_offset(
                 Ident {
-                    name: "a".to_string()
+                    name: "a".to_owned()
                 },
                 &query
             )
@@ -168,7 +168,7 @@ mod tests {
             Some(16),
             calc_offset(
                 Ident {
-                    name: "b".to_string()
+                    name: "b".to_owned()
                 },
                 &query
             )
@@ -177,7 +177,7 @@ mod tests {
             Some(24),
             calc_offset(
                 Ident {
-                    name: "c".to_string()
+                    name: "c".to_owned()
                 },
                 &query
             )
@@ -186,7 +186,7 @@ mod tests {
             None,
             calc_offset(
                 Ident {
-                    name: "d".to_string()
+                    name: "d".to_owned()
                 },
                 &query
             )
@@ -196,16 +196,16 @@ mod tests {
     #[test]
     fn ident2var_test() {
         let ident0 = Ident {
-            name: "a".to_string(),
+            name: "a".to_owned(),
         };
         let ident1 = Ident {
-            name: "b".to_string(),
+            name: "b".to_owned(),
         };
         let ident2 = Ident {
-            name: "c".to_string(),
+            name: "c".to_owned(),
         };
         let ident3 = Ident {
-            name: "d".to_string(),
+            name: "d".to_owned(),
         };
         let idents = vec![ident0.clone(), ident1.clone(), ident2.clone()];
 
@@ -232,20 +232,20 @@ mod tests {
         let query = vec![
             Token::Integer(0),
             Token::Ident(Ident {
-                name: "a".to_string(),
+                name: "a".to_owned(),
             }),
             Token::Ident(Ident {
-                name: "b".to_string(),
+                name: "b".to_owned(),
             }),
             Token::Add,
             Token::Ident(Ident {
-                name: "b".to_string(),
+                name: "b".to_owned(),
             }),
             Token::Ident(Ident {
-                name: "c".to_string(),
+                name: "c".to_owned(),
             }),
             Token::Ident(Ident {
-                name: "c".to_string(),
+                name: "c".to_owned(),
             }),
             Token::Add,
         ];

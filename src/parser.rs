@@ -26,11 +26,11 @@ fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
         Err(e) => return Err(e),
     };
     if tokens.is_empty() {
-        Err("expected semicolon but disappear".to_string())
+        Err("expected semicolon but disappear".to_owned())
     } else {
         match tokens[0] {
             Token::Semicolon => Ok((tree, tokens[1..].to_vec())),
-            _ => Err("expected semicolon but disappear".to_string()),
+            _ => Err("expected semicolon but disappear".to_owned()),
         }
     }
 }
@@ -196,19 +196,19 @@ fn unary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
 
 fn primary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     if tokens.is_empty() {
-        Err("expect number or block but disappear".to_string())
+        Err("expect number or block but disappear".to_owned())
     } else {
         match tokens[0] {
             Token::LParen => match expr(tokens[1..].to_vec()) {
                 Ok((expr, tokens)) => match tokens[0] {
                     Token::RParen => Ok((expr, tokens[1..].to_vec())),
-                    _ => Err("expect ')' but disappear".to_string()),
+                    _ => Err("expect ')' but disappear".to_owned()),
                 },
                 Err(e) => Err(e),
             },
             Token::Integer(n) => Ok((Tree::new_int(n), tokens[1..].to_vec())),
             Token::Variable { offset } => Ok((Tree::new_val(offset), tokens[1..].to_vec())),
-            _ => Err("expect number or block but disappear".to_string()),
+            _ => Err("expect number or block but disappear".to_owned()),
         }
     }
 }

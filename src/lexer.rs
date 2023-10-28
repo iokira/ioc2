@@ -150,7 +150,7 @@ mod tests {
         assert_eq!(
             Ok((
                 Token::Ident(Ident {
-                    name: "abc".to_string()
+                    name: "abc".to_owned()
                 }),
                 3
             )),
@@ -159,7 +159,7 @@ mod tests {
         assert_eq!(
             Ok((
                 Token::Ident(Ident {
-                    name: "abc_de".to_string()
+                    name: "abc_de".to_owned()
                 }),
                 6
             )),
@@ -337,11 +337,11 @@ mod tests {
                 Token::Div,
                 Token::Equality,
                 Token::Ident(Ident {
-                    name: "abc".to_string()
+                    name: "abc".to_owned()
                 }),
                 Token::Equal,
                 Token::Ident(Ident {
-                    name: "d_ef".to_string()
+                    name: "d_ef".to_owned()
                 }),
                 Token::Noneequality,
                 Token::LessOrEqual,

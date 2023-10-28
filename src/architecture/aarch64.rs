@@ -45,11 +45,11 @@ impl fmt::Display for Operand {
 }
 
 pub fn program_prologue() -> String {
-    ".text\n".to_string()
+    ".text\n".to_owned()
 }
 
 pub fn main_func() -> String {
-    ".globl _main\n_main:\n".to_string()
+    ".globl _main\n_main:\n".to_owned()
 }
 
 /// mov rbp(r8), sp(r13)
@@ -279,5 +279,5 @@ fn less_or_eq(rd: Operand, rn: Operand) -> String {
 }
 
 fn ret() -> String {
-    "\tret\n".to_string()
+    "\tret\n".to_owned()
 }

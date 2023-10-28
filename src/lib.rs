@@ -49,7 +49,7 @@ pub fn run(input: Config) -> Result<(), String> {
         Ok(tokens) => tokens,
         Err(e) => {
             return match e {
-                TokenizeError => Err("tokenize error".to_string()),
+                TokenizeError => Err("tokenize error".to_owned()),
                 InvalidChar(c) => Err(format!(
                     "tokenize error\n{}",
                     invalid_char_error(&contents, c)
@@ -70,7 +70,7 @@ pub fn run(input: Config) -> Result<(), String> {
 
     let asm = match generator(trees, ident_count) {
         Ok(asm) => asm,
-        Err(_) => return Err("compile error".to_string()),
+        Err(_) => return Err("compile error".to_owned()),
     };
 
     let mut output_file = match File::create(input.assembly_file_path) {

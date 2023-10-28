@@ -122,6 +122,10 @@ fn expect_whitespace(s: &str) -> bool {
     count_whitespace(s) > 0
 }
 
+fn expect_return(s: &str) -> bool {
+    expect_str(s, "return") && s[6..].chars().next().is_some_and(|c| !is_ident_char(c))
+}
+
 fn is_ident_char(c: char) -> bool {
     c.is_alphabetic() || c == '_'
 }
@@ -255,6 +259,17 @@ mod tests {
 
         assert!(expect_whitespace(s1));
         assert!(!expect_whitespace(s2));
+    }
+
+    #[test]
+    fn expect_return_test() {
+        let s1 = "return abc";
+        let s2 = "return2";
+        let s3 = "returnabc";
+
+        assert!(expect_return(s1));
+        assert!(expect_return(s2));
+        assert!(!expect_return(s3));
     }
 
     #[test]

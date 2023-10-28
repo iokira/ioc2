@@ -40,10 +40,7 @@ fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
 }
 
 fn expr(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
-    match assign(tokens) {
-        Ok((tree, tokens)) => Ok((tree, tokens)),
-        Err(e) => Err(e),
-    }
+    assign(tokens)
 }
 
 fn assign(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {

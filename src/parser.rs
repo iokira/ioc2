@@ -299,4 +299,88 @@ mod tests {
             parser(query2)
         );
     }
+
+    #[test]
+    fn equality_test() {
+        let query = variable_analysis(lexer("1 == 1;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Equality,
+                Tree::new_int(1),
+                Tree::new_int(1)
+            )]),
+            parser(query)
+        );
+    }
+
+    #[test]
+    fn noneequality_test() {
+        let query = variable_analysis(lexer("1 != 1;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Nonequality,
+                Tree::new_int(1),
+                Tree::new_int(1)
+            )]),
+            parser(query)
+        );
+    }
+
+    #[test]
+    fn less_or_equal_test() {
+        let query = variable_analysis(lexer("2 <= 1;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::LessOrEqual,
+                Tree::new_int(2),
+                Tree::new_int(1)
+            )]),
+            parser(query)
+        );
+    }
+
+    #[test]
+    fn less_test() {
+        let query = variable_analysis(lexer("2 < 1;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Less,
+                Tree::new_int(2),
+                Tree::new_int(1)
+            )]),
+            parser(query)
+        );
+    }
+
+    #[test]
+    fn greater_or_equal_test() {
+        let query = variable_analysis(lexer("2 >= 1;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::LessOrEqual,
+                Tree::new_int(1),
+                Tree::new_int(2)
+            )]),
+            parser(query)
+        );
+    }
+
+    #[test]
+    fn greater_test() {
+        let query = variable_analysis(lexer("2 > 1;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Less,
+                Tree::new_int(1),
+                Tree::new_int(2)
+            )]),
+            parser(query)
+        );
+    }
 }

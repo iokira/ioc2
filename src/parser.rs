@@ -24,9 +24,15 @@ fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     if tokens.is_empty() {
         Err("expected semicolon but disappear".to_owned())
     } else {
-        let (tree, tokens) = match expr(tokens) {
-            Ok((tree, tokens)) => (tree, tokens),
-            Err(e) => return Err(e),
+        let (tree, tokens) = match tokens[0] {
+            Token::Return => match expr(tokens[1..].to_vec()) {
+                Ok((tree, tokens)) => (Tree::new_return(tree), tokens),
+                Err(e) => return Err(e),
+            },
+            _ => match expr(tokens) {
+                Ok((tree, tokens)) => (tree, tokens),
+                Err(e) => return Err(e),
+            },
         };
         if tokens.is_empty() {
             Err("expected semicolon but disappear".to_owned())
@@ -443,5 +449,12 @@ column * row;
         let (query, _ident_count) = variable_analysis(lexer("1;2;").unwrap()).unwrap();
 
         assert_eq!(Ok(vec![Tree::new_int(1), Tree::new_int(2)]), parser(query));
+    }
+
+    #[test]
+    fn return_test() {
+        let (query, _ident_count) = variable_analysis(lexer("return 0;").unwrap()).unwrap();
+
+        assert_eq!(Ok(vec![Tree::new_return(Tree::new_int(0))]), parser(query));
     }
 }

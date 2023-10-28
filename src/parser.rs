@@ -212,6 +212,8 @@ fn primary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
 
 #[cfg(test)]
 mod tests {
+    use crate::{lexer::lexer, variable::variable_analysis};
+
     use super::*;
 
     #[test]
@@ -221,10 +223,64 @@ mod tests {
 
     #[test]
     fn one_int_test() {
-        let query1 = vec![Token::Integer(0), Token::Semicolon];
-        let query2 = vec![Token::Integer(1), Token::Semicolon];
+        let query = variable_analysis(lexer("500;").unwrap()).unwrap();
 
-        assert_eq!(Ok(vec![Tree::Int(0)]), parser(query1));
-        assert_eq!(Ok(vec![Tree::Int(1)]), parser(query2));
+        assert_eq!(Ok(vec![Tree::Int(500)]), parser(query))
+    }
+
+    #[test]
+    fn add_test() {
+        let query = variable_analysis(lexer("1 + 2;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Add,
+                Tree::Int(1),
+                Tree::Int(2)
+            )]),
+            parser(query)
+        );
+    }
+
+    #[test]
+    fn sub_test() {
+        let query = variable_analysis(lexer("2 - 1;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Sub,
+                Tree::Int(2),
+                Tree::Int(1)
+            )]),
+            parser(query)
+        );
+    }
+
+    #[test]
+    fn mul_test() {
+        let query = variable_analysis(lexer("4 * 5;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Mul,
+                Tree::Int(4),
+                Tree::Int(5)
+            )]),
+            parser(query)
+        );
+    }
+
+    #[test]
+    fn div_test() {
+        let query = variable_analysis(lexer("8 / 4;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Div,
+                Tree::Int(8),
+                Tree::Int(4)
+            )]),
+            parser(query)
+        );
     }
 }

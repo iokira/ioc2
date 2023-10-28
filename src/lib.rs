@@ -1,5 +1,6 @@
-use crate::lexer::lexer;
 use error::invalid_char_error;
+use generator::generator;
+use lexer::lexer;
 use parser::parser;
 use std::{
     fs::{self, File},
@@ -9,6 +10,7 @@ use token::TokenError::{InvalidChar, TokenizeError};
 use variable::variable_analysis;
 
 mod error;
+mod generator;
 mod lexer;
 mod parser;
 mod token;
@@ -60,9 +62,14 @@ pub fn run(input: Config) -> Result<(), String> {
         Err(e) => return Err(e.to_string()),
     };
 
-    let _trees = match parser(tokens) {
+    let trees = match parser(tokens) {
         Ok(trees) => trees,
         Err(_) => return Err("parse error".to_string()),
+    };
+
+    let asm = match generator(trees) {
+        Ok(asm) => asm,
+        Err(_) => return Err("compile error".to_string()),
     };
 
     let mut output_file = match File::create(input.assembly_file_path) {

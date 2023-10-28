@@ -60,6 +60,25 @@ fn assign(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
 }
 
 fn equality(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    fn go(tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+        let (tree, tokens) = match tokens[0] {
+            Token::Equality => match relational(tokens[1..].to_vec()) {
+                Ok((relational, tokens)) => {
+                    (Tree::new_tree(NodeKind::Equality, tree, relational), tokens)
+                }
+                Err(e) => return Err(e),
+            },
+            Token::Noneequality => match relational(tokens[1..].to_vec()) {
+                Ok((relational, tokens)) => (
+                    Tree::new_tree(NodeKind::Nonequality, tree, relational),
+                    tokens,
+                ),
+                Err(e) => return Err(e),
+            },
+            _ => return Ok((tree, tokens)),
+        };
+        go(tree, tokens)
+    }
     let (tree, tokens) = match relational(tokens) {
         Ok((tree, tokens)) => (tree, tokens),
         Err(e) => return Err(e),
@@ -67,26 +86,33 @@ fn equality(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     if tokens.is_empty() {
         Ok((tree, tokens))
     } else {
-        match tokens[0] {
-            Token::Equality => match relational(tokens[1..].to_vec()) {
-                Ok((relational, tokens)) => {
-                    Ok((Tree::new_tree(NodeKind::Equality, tree, relational), tokens))
-                }
-                Err(e) => Err(e),
-            },
-            Token::Noneequality => match relational(tokens[1..].to_vec()) {
-                Ok((relational, tokens)) => Ok((
-                    Tree::new_tree(NodeKind::Nonequality, tree, relational),
-                    tokens,
-                )),
-                Err(e) => Err(e),
-            },
-            _ => Ok((tree, tokens)),
-        }
+        go(tree, tokens)
     }
 }
 
 fn relational(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    fn go(tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+        let (tree, tokens) = match tokens[0] {
+            Token::LessOrEqual => match add(tokens[1..].to_vec()) {
+                Ok((add, tokens)) => (Tree::new_tree(NodeKind::LessOrEqual, tree, add), tokens),
+                Err(e) => return Err(e),
+            },
+            Token::Less => match add(tokens[1..].to_vec()) {
+                Ok((add, tokens)) => (Tree::new_tree(NodeKind::Less, tree, add), tokens),
+                Err(e) => return Err(e),
+            },
+            Token::GreaterOrEqual => match add(tokens[1..].to_vec()) {
+                Ok((add, tokens)) => (Tree::new_tree(NodeKind::LessOrEqual, add, tree), tokens),
+                Err(e) => return Err(e),
+            },
+            Token::Greater => match add(tokens[1..].to_vec()) {
+                Ok((add, tokens)) => (Tree::new_tree(NodeKind::Less, add, tree), tokens),
+                Err(e) => return Err(e),
+            },
+            _ => return Ok((tree, tokens)),
+        };
+        go(tree, tokens)
+    }
     let (tree, tokens) = match add(tokens) {
         Ok((tree, tokens)) => (tree, tokens),
         Err(e) => return Err(e),
@@ -94,29 +120,25 @@ fn relational(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     if tokens.is_empty() {
         Ok((tree, tokens))
     } else {
-        match tokens[0] {
-            Token::LessOrEqual => match add(tokens[1..].to_vec()) {
-                Ok((add, tokens)) => Ok((Tree::new_tree(NodeKind::LessOrEqual, tree, add), tokens)),
-                Err(e) => Err(e),
-            },
-            Token::Less => match add(tokens[1..].to_vec()) {
-                Ok((add, tokens)) => Ok((Tree::new_tree(NodeKind::Less, tree, add), tokens)),
-                Err(e) => Err(e),
-            },
-            Token::GreaterOrEqual => match add(tokens[1..].to_vec()) {
-                Ok((add, tokens)) => Ok((Tree::new_tree(NodeKind::LessOrEqual, add, tree), tokens)),
-                Err(e) => Err(e),
-            },
-            Token::Greater => match add(tokens[1..].to_vec()) {
-                Ok((add, tokens)) => Ok((Tree::new_tree(NodeKind::Less, add, tree), tokens)),
-                Err(e) => Err(e),
-            },
-            _ => Ok((tree, tokens)),
-        }
+        go(tree, tokens)
     }
 }
 
 fn add(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    fn go(tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+        let (tree, tokens) = match tokens[0] {
+            Token::Add => match mul(tokens[1..].to_vec()) {
+                Ok((mul, tokens)) => (Tree::new_tree(NodeKind::Add, tree, mul), tokens),
+                Err(e) => return Err(e),
+            },
+            Token::Sub => match mul(tokens[1..].to_vec()) {
+                Ok((mul, tokens)) => (Tree::new_tree(NodeKind::Sub, tree, mul), tokens),
+                Err(e) => return Err(e),
+            },
+            _ => return Ok((tree, tokens)),
+        };
+        go(tree, tokens)
+    }
     let (tree, tokens) = match mul(tokens) {
         Ok((tree, tokens)) => (tree, tokens),
         Err(e) => return Err(e),
@@ -124,21 +146,25 @@ fn add(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     if tokens.is_empty() {
         Ok((tree, tokens))
     } else {
-        match tokens[0] {
-            Token::Add => match mul(tokens[1..].to_vec()) {
-                Ok((mul, tokens)) => Ok((Tree::new_tree(NodeKind::Add, tree, mul), tokens)),
-                Err(e) => Err(e),
-            },
-            Token::Sub => match mul(tokens[1..].to_vec()) {
-                Ok((mul, tokens)) => Ok((Tree::new_tree(NodeKind::Sub, tree, mul), tokens)),
-                Err(e) => Err(e),
-            },
-            _ => Ok((tree, tokens)),
-        }
+        go(tree, tokens)
     }
 }
 
 fn mul(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    fn go(tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+        let (tree, tokens) = match tokens[0] {
+            Token::Mul => match unary(tokens[1..].to_vec()) {
+                Ok((unary, tokens)) => (Tree::new_tree(NodeKind::Mul, tree, unary), tokens),
+                Err(e) => return Err(e),
+            },
+            Token::Div => match unary(tokens[1..].to_vec()) {
+                Ok((unary, tokens)) => (Tree::new_tree(NodeKind::Div, tree, unary), tokens),
+                Err(e) => return Err(e),
+            },
+            _ => return Ok((tree, tokens)),
+        };
+        go(tree, tokens)
+    }
     let (tree, tokens) = match unary(tokens) {
         Ok((tree, tokens)) => (tree, tokens),
         Err(e) => return Err(e),
@@ -146,17 +172,7 @@ fn mul(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     if tokens.is_empty() {
         Ok((tree, tokens))
     } else {
-        match tokens[0] {
-            Token::Mul => match unary(tokens[1..].to_vec()) {
-                Ok((unary, tokens)) => Ok((Tree::new_tree(NodeKind::Mul, tree, unary), tokens)),
-                Err(e) => Err(e),
-            },
-            Token::Div => match unary(tokens[1..].to_vec()) {
-                Ok((unary, tokens)) => Ok((Tree::new_tree(NodeKind::Div, tree, unary), tokens)),
-                Err(e) => Err(e),
-            },
-            _ => Ok((tree, tokens)),
-        }
+        go(tree, tokens)
     }
 }
 

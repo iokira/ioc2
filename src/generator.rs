@@ -25,6 +25,12 @@ fn generate_val(assembly: &mut String, offset: usize) {
 }
 
 pub fn generate_assembly(assembly: &mut String, tree: Tree) -> Result<(), GenerateError> {
+    if let Tree::Return(t) = tree {
+        generate_assembly(assembly, *t)?;
+        assembly.push_str(&gen_ret());
+        return Ok(());
+    }
+
     if let Tree::Int(n) = tree {
         assembly.push_str(&push(Operand::Num(n)));
         return Ok(());

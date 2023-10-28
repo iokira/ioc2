@@ -242,6 +242,19 @@ fn less_or_eq(rd: Operand, rn: Operand) -> String {
     format!("\tcmp {}, {}\n\tsetle al\n\tmovzb {}, al\n", rd, rn, rd)
 }
 
+pub fn gen_ret() -> String {
+    format!(
+        "{}{}{}{}",
+        pop(Operand::Register(Register::R0)),
+        mov(
+            Operand::Register(Register::R6),
+            Operand::Register(Register::R5)
+        ),
+        pop(Operand::Register(Register::R5)),
+        ret()
+    )
+}
+
 fn ret() -> String {
     "\tret\n".to_owned()
 }

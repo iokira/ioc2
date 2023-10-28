@@ -8,7 +8,7 @@ pub enum Register {
     R1,
     /// x8(rbp)
     R8,
-    /// x9(tsp)
+    /// x9(rsp)
     R9,
     /// sp
     R13,
@@ -276,6 +276,19 @@ pub fn less_or_eq_arg() -> String {
 
 fn less_or_eq(rd: Operand, rn: Operand) -> String {
     format!("\tcmp {}, {}\n\tcset {}, LS\n", rd, rn, rd)
+}
+
+pub fn gen_ret() -> String {
+    format!(
+        "{}{}{}{}",
+        pop(Operand::Register(Register::R0)),
+        mov(
+            Operand::Register(Register::R9),
+            Operand::Register(Register::R8)
+        ),
+        pop(Operand::Register(Register::R8)),
+        ret()
+    )
 }
 
 fn ret() -> String {

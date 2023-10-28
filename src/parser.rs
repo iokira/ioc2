@@ -21,16 +21,20 @@ fn program(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
 }
 
 fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
-    let (tree, tokens) = match expr(tokens) {
-        Ok((tree, tokens)) => (tree, tokens),
-        Err(e) => return Err(e),
-    };
     if tokens.is_empty() {
         Err("expected semicolon but disappear".to_owned())
     } else {
-        match tokens[0] {
-            Token::Semicolon => Ok((tree, tokens[1..].to_vec())),
-            _ => Err("expected semicolon but disappear".to_owned()),
+        let (tree, tokens) = match expr(tokens) {
+            Ok((tree, tokens)) => (tree, tokens),
+            Err(e) => return Err(e),
+        };
+        if tokens.is_empty() {
+            Err("expected semicolon but disappear".to_owned())
+        } else {
+            match tokens[0] {
+                Token::Semicolon => Ok((tree, tokens[1..].to_vec())),
+                _ => Err("expected semicolon but disappear".to_owned()),
+            }
         }
     }
 }

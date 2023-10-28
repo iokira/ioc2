@@ -5,6 +5,7 @@ pub enum Token {
     Integer(Int),
     Ident(Ident),
     Variable { offset: usize },
+    Return,
     Semicolon,
     Equality,
     Equal,

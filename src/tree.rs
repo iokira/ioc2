@@ -2,6 +2,7 @@ use crate::token::Int;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum NodeKind {
+    Return,
     Assign,
     Equality,
     Nonequality,

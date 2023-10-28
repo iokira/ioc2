@@ -11,10 +11,7 @@ pub fn generator(trees: Vec<Tree>, ident_count: usize) -> Result<String, Generat
     asm.push_str(&memory_allocate(ident_count * 8));
 
     for tree in trees {
-        match generate_assembly(&mut asm, tree) {
-            Err(e) => return Err(e),
-            _ => {}
-        };
+        generate_assembly(&mut asm, tree)?;
         asm.push_str(&stmt_epilogue());
     }
 
@@ -48,22 +45,13 @@ pub fn generate_assembly(assembly: &mut String, tree: Tree) -> Result<(), Genera
                     "The left-hand side value of the assignment is not a variable".to_owned(),
                 );
             }
-            match generate_assembly(assembly, *rhs) {
-                Err(e) => return Err(e),
-                _ => {}
-            };
+            generate_assembly(assembly, *rhs)?;
             assembly.push_str(&pop_lvar());
             return Ok(());
         }
 
-        match generate_assembly(assembly, *lhs) {
-            Err(e) => return Err(e),
-            _ => {}
-        };
-        match generate_assembly(assembly, *rhs) {
-            Err(e) => return Err(e),
-            _ => {}
-        };
+        generate_assembly(assembly, *lhs)?;
+        generate_assembly(assembly, *rhs)?;
 
         assembly.push_str(&pop_arg());
 

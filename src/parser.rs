@@ -26,7 +26,9 @@ fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
         Err(e) => return Err(e),
     };
     if tokens.is_empty() {
-        Ok((tree, tokens))
+        Err(TreeError::ParseError(
+            "expected semicolon but disappear".to_string(),
+        ))
     } else {
         match tokens[0] {
             Token::Semicolon => Ok((tree, tokens[1..].to_vec())),

@@ -16,7 +16,7 @@ pub enum NodeKind {
 #[derive(Debug, PartialEq, Clone)]
 pub enum Tree {
     Int(Int),
-    Val(usize),
+    Val { offset: usize },
     Node(NodeKind, Box<Tree>, Box<Tree>),
 }
 
@@ -35,6 +35,6 @@ impl Tree {
     }
 
     pub fn new_val(offset: usize) -> Tree {
-        Tree::Val(offset)
+        Tree::Val { offset }
     }
 }

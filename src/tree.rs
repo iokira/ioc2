@@ -20,10 +20,7 @@ pub enum Tree {
     Node(NodeKind, Box<Tree>, Box<Tree>),
 }
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum TreeError {
-    ParseError(String),
-}
+pub type TreeError = String;
 
 impl Tree {
     pub fn new_tree(kind: NodeKind, lhs: Tree, rhs: Tree) -> Tree {

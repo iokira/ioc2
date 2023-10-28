@@ -64,7 +64,7 @@ pub fn run(input: Config) -> Result<(), String> {
 
     let trees = match parser(tokens) {
         Ok(trees) => trees,
-        Err(_) => return Err("parse error".to_string()),
+        Err(e) => return Err("parse error".to_string()),
     };
 
     let asm = match generator(trees) {

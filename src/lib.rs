@@ -9,6 +9,7 @@ use std::{
 use token::TokenError::{InvalidChar, TokenizeError};
 use variable::variable_analysis;
 
+mod architecture;
 mod error;
 mod generator;
 mod lexer;

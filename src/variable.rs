@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::token::*;
 
-pub fn variable_analysis(tokens: Vec<Token>) -> Result<Vec<Token>, &'static str> {
+pub fn variable_analysis(tokens: Vec<Token>) -> Result<(Vec<Token>, usize), &'static str> {
     convert_tokens(tokens)
 }
 
@@ -43,8 +43,9 @@ fn ident2var(token: Token, idents: &[Ident]) -> Result<Token, &'static str> {
     }
 }
 
-fn convert_tokens(tokens: Vec<Token>) -> Result<Vec<Token>, &'static str> {
+fn convert_tokens(tokens: Vec<Token>) -> Result<(Vec<Token>, usize), &'static str> {
     let idents = deduplicate_variable(extract_ident(&tokens));
+    let idents_count = idents.len();
     fn go(tokens: Vec<Token>, idents: Vec<Ident>) -> Result<Vec<Token>, &'static str> {
         if tokens.is_empty() {
             return Ok(vec![]);
@@ -57,7 +58,10 @@ fn convert_tokens(tokens: Vec<Token>) -> Result<Vec<Token>, &'static str> {
             Err(e) => Err(e),
         }
     }
-    go(tokens, idents)
+    match go(tokens, idents) {
+        Ok(tokens) => Ok((tokens, idents_count)),
+        Err(e) => Err(e),
+    }
 }
 
 #[cfg(test)]

@@ -57,17 +57,17 @@ pub fn run(input: Config) -> Result<(), String> {
         }
     };
 
-    let tokens = match variable_analysis(tokens) {
-        Ok(tokens) => tokens,
+    let (tokens, ident_count) = match variable_analysis(tokens) {
+        Ok((tokens, ident_count)) => (tokens, ident_count),
         Err(e) => return Err(e.to_string()),
     };
 
     let trees = match parser(tokens) {
         Ok(trees) => trees,
-        Err(e) => return Err("parse error".to_string()),
+        Err(e) => return Err(format!("parse error: {}", e)),
     };
 
-    let asm = match generator(trees) {
+    let asm = match generator(trees, ident_count) {
         Ok(asm) => asm,
         Err(_) => return Err("compile error".to_string()),
     };

@@ -413,4 +413,11 @@ column * row;
             parser(query)
         );
     }
+
+    #[test]
+    fn statement_test() {
+        let query = variable_analysis(lexer("1;2;").unwrap()).unwrap();
+
+        assert_eq!(Ok(vec![Tree::new_int(1), Tree::new_int(2)]), parser(query));
+    }
 }

@@ -18,6 +18,8 @@ pub fn lexer(s: &str) -> Result<Vec<Token>, TokenError> {
         lexer(&s[count_whitespace(s)..])
     } else if expect_int(s) {
         go(tokenize_int)
+    } else if expect_return(s) {
+        go(tokenize_return)
     } else if expect_ident(s) {
         go(tokenize_ident)
     } else if !expect_operators(s).is_empty() {
@@ -68,6 +70,10 @@ fn tokenize_operator(s: &str) -> Result<(Token, usize), TokenError> {
         ")" => Ok((Token::RParen, 1)),
         _ => Err(TokenError::TokenizeError),
     }
+}
+
+fn tokenize_return(s: &str) -> Result<(Token, usize), TokenError> {
+    Ok((Token::Return, 6))
 }
 
 fn count_int(s: &str) -> usize {

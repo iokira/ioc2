@@ -205,7 +205,7 @@ mod tests {
 
     #[test]
     fn parser_test() {
-        let query = variable_analysis(
+        let (query, ident_count) = variable_analysis(
             lexer(
                 "
 column = 5;
@@ -229,14 +229,14 @@ column * row;
 
     #[test]
     fn one_int_test() {
-        let query = variable_analysis(lexer("500;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("500;").unwrap()).unwrap();
 
         assert_eq!(Ok(vec![Tree::new_int(500)]), parser(query));
     }
 
     #[test]
     fn add_test() {
-        let query = variable_analysis(lexer("1 + 2;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("1 + 2;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -250,7 +250,7 @@ column * row;
 
     #[test]
     fn sub_test() {
-        let query = variable_analysis(lexer("2 - 1;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("2 - 1;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -264,7 +264,7 @@ column * row;
 
     #[test]
     fn mul_test() {
-        let query = variable_analysis(lexer("4 * 5;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("4 * 5;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -278,7 +278,7 @@ column * row;
 
     #[test]
     fn div_test() {
-        let query = variable_analysis(lexer("8 / 4;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("8 / 4;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -292,8 +292,8 @@ column * row;
 
     #[test]
     fn unary_test() {
-        let query1 = variable_analysis(lexer("+1;").unwrap()).unwrap();
-        let query2 = variable_analysis(lexer("-1;").unwrap()).unwrap();
+        let (query1, ident_count) = variable_analysis(lexer("+1;").unwrap()).unwrap();
+        let (query2, ident_count) = variable_analysis(lexer("-1;").unwrap()).unwrap();
 
         assert_eq!(Ok(vec![Tree::new_int(1)]), parser(query1));
         assert_eq!(
@@ -308,7 +308,7 @@ column * row;
 
     #[test]
     fn equality_test() {
-        let query = variable_analysis(lexer("1 == 1;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("1 == 1;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -322,7 +322,7 @@ column * row;
 
     #[test]
     fn noneequality_test() {
-        let query = variable_analysis(lexer("1 != 1;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("1 != 1;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -336,7 +336,7 @@ column * row;
 
     #[test]
     fn less_or_equal_test() {
-        let query = variable_analysis(lexer("2 <= 1;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("2 <= 1;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -350,7 +350,7 @@ column * row;
 
     #[test]
     fn less_test() {
-        let query = variable_analysis(lexer("2 < 1;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("2 < 1;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -364,7 +364,7 @@ column * row;
 
     #[test]
     fn greater_or_equal_test() {
-        let query = variable_analysis(lexer("2 >= 1;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("2 >= 1;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -378,7 +378,7 @@ column * row;
 
     #[test]
     fn greater_test() {
-        let query = variable_analysis(lexer("2 > 1;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("2 > 1;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -392,7 +392,7 @@ column * row;
 
     #[test]
     fn assign_test() {
-        let query = variable_analysis(lexer("a = 123;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("a = 123;").unwrap()).unwrap();
 
         assert_eq!(
             Ok(vec![Tree::new_tree(
@@ -406,7 +406,7 @@ column * row;
 
     #[test]
     fn statement_test() {
-        let query = variable_analysis(lexer("1;2;").unwrap()).unwrap();
+        let (query, ident_count) = variable_analysis(lexer("1;2;").unwrap()).unwrap();
 
         assert_eq!(Ok(vec![Tree::new_int(1), Tree::new_int(2)]), parser(query));
     }

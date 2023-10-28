@@ -79,11 +79,10 @@ mod tests {
         ];
 
         assert_eq!(
-            Ok(vec![
-                Token::Integer(0),
-                Token::Variable { offset: 8 },
-                Token::Add
-            ]),
+            Ok((
+                vec![Token::Integer(0), Token::Variable { offset: 8 }, Token::Add],
+                1
+            )),
             variable_analysis(query1)
         );
     }
@@ -252,16 +251,19 @@ mod tests {
         ];
 
         assert_eq!(
-            Ok(vec![
-                Token::Integer(0),
-                Token::Variable { offset: 8 },
-                Token::Variable { offset: 16 },
-                Token::Add,
-                Token::Variable { offset: 16 },
-                Token::Variable { offset: 24 },
-                Token::Variable { offset: 24 },
-                Token::Add,
-            ]),
+            Ok((
+                vec![
+                    Token::Integer(0),
+                    Token::Variable { offset: 8 },
+                    Token::Variable { offset: 16 },
+                    Token::Add,
+                    Token::Variable { offset: 16 },
+                    Token::Variable { offset: 24 },
+                    Token::Variable { offset: 24 },
+                    Token::Add,
+                ],
+                3
+            )),
             convert_tokens(query)
         );
     }

@@ -225,7 +225,7 @@ mod tests {
     fn one_int_test() {
         let query = variable_analysis(lexer("500;").unwrap()).unwrap();
 
-        assert_eq!(Ok(vec![Tree::Int(500)]), parser(query))
+        assert_eq!(Ok(vec![Tree::new_int(500)]), parser(query))
     }
 
     #[test]
@@ -235,8 +235,8 @@ mod tests {
         assert_eq!(
             Ok(vec![Tree::new_tree(
                 NodeKind::Add,
-                Tree::Int(1),
-                Tree::Int(2)
+                Tree::new_int(1),
+                Tree::new_int(2)
             )]),
             parser(query)
         );
@@ -249,8 +249,8 @@ mod tests {
         assert_eq!(
             Ok(vec![Tree::new_tree(
                 NodeKind::Sub,
-                Tree::Int(2),
-                Tree::Int(1)
+                Tree::new_int(2),
+                Tree::new_int(1)
             )]),
             parser(query)
         );
@@ -263,8 +263,8 @@ mod tests {
         assert_eq!(
             Ok(vec![Tree::new_tree(
                 NodeKind::Mul,
-                Tree::Int(4),
-                Tree::Int(5)
+                Tree::new_int(4),
+                Tree::new_int(5)
             )]),
             parser(query)
         );
@@ -277,8 +277,8 @@ mod tests {
         assert_eq!(
             Ok(vec![Tree::new_tree(
                 NodeKind::Div,
-                Tree::Int(8),
-                Tree::Int(4)
+                Tree::new_int(8),
+                Tree::new_int(4)
             )]),
             parser(query)
         );

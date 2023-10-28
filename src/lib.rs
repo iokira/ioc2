@@ -70,7 +70,7 @@ pub fn run(input: Config) -> Result<(), String> {
 
     let asm = match generator(trees, ident_count) {
         Ok(asm) => asm,
-        Err(_) => return Err("compile error".to_owned()),
+        Err(e) => return Err(format!("generate error: {}", e)),
     };
 
     let mut output_file = match File::create(input.assembly_file_path) {

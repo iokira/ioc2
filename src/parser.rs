@@ -283,4 +283,20 @@ mod tests {
             parser(query)
         );
     }
+
+    #[test]
+    fn unary_test() {
+        let query1 = variable_analysis(lexer("+1;").unwrap()).unwrap();
+        let query2 = variable_analysis(lexer("-1;").unwrap()).unwrap();
+
+        assert_eq!(Ok(vec![Tree::new_int(1)]), parser(query1));
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Sub,
+                Tree::new_int(0),
+                Tree::new_int(1)
+            )]),
+            parser(query2)
+        );
+    }
 }

@@ -402,4 +402,18 @@ column * row;
             parser(query)
         );
     }
+
+    #[test]
+    fn assign_test() {
+        let query = variable_analysis(lexer("a = 123;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_tree(
+                NodeKind::Assign,
+                Tree::new_val(8),
+                Tree::new_int(123)
+            )]),
+            parser(query)
+        );
+    }
 }

@@ -26,11 +26,13 @@ fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
         Err(e) => return Err(e),
     };
     if tokens.is_empty() {
-        Err(TreeError::ParseError)
+        Ok((tree, tokens))
     } else {
         match tokens[0] {
             Token::Semicolon => Ok((tree, tokens[1..].to_vec())),
-            _ => Err(TreeError::ParseError),
+            _ => Err(TreeError::ParseError(
+                "expected semicolon but disappear".to_string(),
+            )),
         }
     }
 }
@@ -48,7 +50,7 @@ fn assign(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
         Err(e) => return Err(e),
     };
     if tokens.is_empty() {
-        Err(TreeError::ParseError)
+        Ok((tree, tokens))
     } else {
         match tokens[0] {
             Token::Equal => match assign(tokens[1..].to_vec()) {
@@ -183,19 +185,25 @@ fn unary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
 
 fn primary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     if tokens.is_empty() {
-        Err(TreeError::ParseError)
+        Err(TreeError::ParseError(
+            "expect number or block but disappear".to_string(),
+        ))
     } else {
         match tokens[0] {
             Token::LParen => match expr(tokens[1..].to_vec()) {
                 Ok((expr, tokens)) => match tokens[0] {
                     Token::RParen => Ok((expr, tokens)),
-                    _ => Err(TreeError::ParseError),
+                    _ => Err(TreeError::ParseError(
+                        "expect ')' but disappear".to_string(),
+                    )),
                 },
                 Err(e) => Err(e),
             },
             Token::Integer(n) => Ok((Tree::new_int(n), tokens[1..].to_vec())),
             Token::Variable { offset } => Ok((Tree::new_val(offset), tokens[1..].to_vec())),
-            _ => Err(TreeError::ParseError),
+            _ => Err(TreeError::ParseError(
+                "expect number or block but disappear".to_string(),
+            )),
         }
     }
 }

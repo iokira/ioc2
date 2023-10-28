@@ -22,7 +22,7 @@ pub enum Tree {
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum TreeError {
-    ParseError,
+    ParseError(String),
 }
 
 impl Tree {

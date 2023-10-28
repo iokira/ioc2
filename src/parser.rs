@@ -171,7 +171,7 @@ fn unary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
             Token::Add => primary(tokens[1..].to_vec()),
             Token::Sub => match primary(tokens[1..].to_vec()) {
                 Ok((primary, tokens)) => Ok((
-                    Tree::new_tree(NodeKind::Sub, Tree::new_num(0), primary),
+                    Tree::new_tree(NodeKind::Sub, Tree::new_int(0), primary),
                     tokens,
                 )),
                 Err(e) => Err(e),
@@ -193,8 +193,8 @@ fn primary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
                 },
                 Err(e) => Err(e),
             },
-            Token::Integer(n) => Ok((Tree::new_num(n), tokens[1..].to_vec())),
-            Token::Variable { offset } => Ok((Tree::Val(offset), tokens[1..].to_vec())),
+            Token::Integer(n) => Ok((Tree::new_int(n), tokens[1..].to_vec())),
+            Token::Variable { offset } => Ok((Tree::new_val(offset), tokens[1..].to_vec())),
             _ => Err(TreeError::ParseError),
         }
     }

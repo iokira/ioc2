@@ -2,7 +2,6 @@ use crate::token::Int;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum NodeKind {
-    Value,
     Assign,
     Equality,
     Nonequality,
@@ -31,7 +30,11 @@ impl Tree {
         Tree::Node(kind, Box::new(lhs), Box::new(rhs))
     }
 
-    pub fn new_num(num: Int) -> Tree {
+    pub fn new_int(num: Int) -> Tree {
         Tree::Int(num)
+    }
+
+    pub fn new_val(offset: usize) -> Tree {
+        Tree::Val(offset)
     }
 }

@@ -6,34 +6,12 @@ pub enum Register {
     R0,
     /// x1
     R1,
-    /// x2
-    R2,
-    /// x3
-    R3,
-    /// x4
-    R4,
-    /// x5
-    R5,
-    /// x6
-    R6,
-    /// x7
-    R7,
     /// x8(rbp)
     R8,
     /// x9(tsp)
     R9,
-    /// x10
-    R10,
-    /// x11
-    R11,
-    /// x12
-    R12,
     /// sp
     R13,
-    /// lr
-    R14,
-    /// pc
-    R15,
 }
 
 pub enum Operand {
@@ -47,20 +25,9 @@ impl fmt::Display for Register {
         let name = match self {
             Register::R0 => "x0",
             Register::R1 => "x1",
-            Register::R2 => "x2",
-            Register::R3 => "x3",
-            Register::R4 => "x4",
-            Register::R5 => "x5",
-            Register::R6 => "x6",
-            Register::R7 => "x7",
             Register::R8 => "x8",
             Register::R9 => "x9",
-            Register::R10 => "x10",
-            Register::R11 => "x11",
-            Register::R12 => "x12",
             Register::R13 => "sp",
-            Register::R14 => "lr",
-            Register::R15 => "pc",
         };
         write!(f, "{}", name)
     }

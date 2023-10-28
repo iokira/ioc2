@@ -51,9 +51,9 @@ fn convert_tokens(tokens: Vec<Token>) -> Result<Vec<Token>, &'static str> {
         match ident2var(tokens[0].clone(), &idents) {
             Ok(t) => match go(tokens[1..].to_vec(), idents) {
                 Ok(ts) => Ok([vec![t], ts].concat()),
-                Err(e) => return Err(e),
+                Err(e) => Err(e),
             },
-            Err(e) => return Err(e),
+            Err(e) => Err(e),
         }
     }
     go(tokens, idents)

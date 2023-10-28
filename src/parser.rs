@@ -57,7 +57,7 @@ fn assign(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
                 Ok((assign, tokens)) => {
                     Ok((Tree::new_tree(NodeKind::Assign, tree, assign), tokens))
                 }
-                Err(e) => return Err(e),
+                Err(e) => Err(e),
             },
             _ => Ok((tree, tokens)),
         }

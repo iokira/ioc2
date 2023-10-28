@@ -1,0 +1,17 @@
+[tasks.build]
+command = "cargo"
+args = ["build"]
+
+[tasks.test]
+command = "./test.sh"
+
+[tasks.testx]
+command = "bash"
+args = ["-x", "test.sh"]
+
+[tasks.run]
+dependencies = ["build", "test"]
+
+[tasks.runx]
+dependencies = ["build", "testx"]
+

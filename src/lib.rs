@@ -67,7 +67,7 @@ pub fn run(input: Config) -> Result<(), String> {
         Err(e) => return Err(format!("parse error: {}", e)),
     };
 
-    let asm = match generator(trees, ident_count) {
+    let _asm = match generator(trees, ident_count) {
         Ok(asm) => asm,
         Err(_) => return Err("compile error".to_string()),
     };

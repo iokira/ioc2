@@ -20,6 +20,14 @@ pub fn lexer(s: &str) -> Result<Vec<Token>, TokenError> {
         go(tokenize_int)
     } else if expect_return(s) {
         go(tokenize_return)
+    } else if expect_if(s) {
+        go(tokenize_if)
+    } else if expect_else(s) {
+        go(tokenize_else)
+    } else if expect_while(s) {
+        go(tokenize_while)
+    } else if expect_for(s) {
+        go(tokenize_for)
     } else if expect_ident(s) {
         go(tokenize_ident)
     } else if !expect_operators(s).is_empty() {
@@ -74,6 +82,22 @@ fn tokenize_operator(s: &str) -> Result<(Token, usize), TokenError> {
 
 fn tokenize_return(_: &str) -> Result<(Token, usize), TokenError> {
     Ok((Token::Return, 6))
+}
+
+fn tokenize_if(_: &str) -> Result<(Token, usize), TokenError> {
+    Ok((Token::If, 2))
+}
+
+fn tokenize_else(_: &str) -> Result<(Token, usize), TokenError> {
+    Ok((Token::Else, 4))
+}
+
+fn tokenize_while(_: &str) -> Result<(Token, usize), TokenError> {
+    Ok((Token::While, 5))
+}
+
+fn tokenize_for(_: &str) -> Result<(Token, usize), TokenError> {
+    Ok((Token::For, 3))
 }
 
 fn count_int(s: &str) -> usize {
@@ -412,7 +436,7 @@ mod tests {
 
     #[test]
     fn lexer_test() {
-        let query1 = "1 + 10 - 123 * / == abc = d_ef != <= < >= > ();";
+        let query1 = "1 + 10 - 123 * / == abc = d_ef != <= < >= > (); if else while for";
         let query2 = "abc$";
 
         assert_eq!(
@@ -440,6 +464,10 @@ mod tests {
                 Token::LParen,
                 Token::RParen,
                 Token::Semicolon,
+                Token::If,
+                Token::Else,
+                Token::While,
+                Token::For,
             ]),
             lexer(query1)
         );

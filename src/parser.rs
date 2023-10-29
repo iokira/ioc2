@@ -22,27 +22,223 @@ fn program(tokens: Vec<Token>) -> Result<Vec<Tree>, TreeError> {
 
 fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     if tokens.is_empty() {
-        Err("expected semicolon but disappear".to_owned())
+        Err(semicolon_error())
     } else {
         let (tree, tokens) = match tokens[0] {
-            Token::Return => match expr(tokens[1..].to_vec()) {
-                Ok((tree, tokens)) => (Tree::new_return(tree), tokens),
-                Err(e) => return Err(e),
+            Token::If => {
+                let (expr_tree, tokens) = parse_paren_expr(tokens[1..].to_vec())?;
+                parse_if(expr_tree, tokens)?
+            }
+            Token::While => {
+                let (expr_tree, tokens) = parse_paren_expr(tokens[1..].to_vec())?;
+                parse_while(expr_tree, tokens)?
+            }
+            Token::For => match tokens[1] {
+                Token::LParen => match tokens[2] {
+                    Token::Semicolon => match tokens[3] {
+                        Token::Semicolon => match tokens[4] {
+                            Token::RParen => match stmt(tokens[5..].to_vec()) {
+                                Ok((stmt_tree, tokens)) => (
+                                    Tree::new_for(Tree::None, Tree::None, Tree::None, stmt_tree),
+                                    tokens,
+                                ),
+                                Err(e) => return Err(e),
+                            },
+                            _ => match expr(tokens[5..].to_vec()) {
+                                Ok((cond_tree, tokens)) => match stmt(tokens) {
+                                    Ok((stmt_tree, tokens)) => (
+                                        Tree::new_for(Tree::None, Tree::None, cond_tree, stmt_tree),
+                                        tokens,
+                                    ),
+                                    Err(e) => return Err(e),
+                                },
+                                Err(e) => return Err(e),
+                            },
+                        },
+                        _ => match expr(tokens[4..].to_vec()) {
+                            Ok((inc_tree, tokens)) => match tokens[0] {
+                                Token::Semicolon => match tokens[1] {
+                                    Token::RParen => match stmt(tokens[5..].to_vec()) {
+                                        Ok((stmt_tree, tokens)) => (
+                                            Tree::new_for(
+                                                Tree::None,
+                                                inc_tree,
+                                                Tree::None,
+                                                stmt_tree,
+                                            ),
+                                            tokens,
+                                        ),
+                                        Err(e) => return Err(e),
+                                    },
+                                    _ => match expr(tokens[5..].to_vec()) {
+                                        Ok((cond_tree, tokens)) => match stmt(tokens) {
+                                            Ok((stmt_tree, tokens)) => (
+                                                Tree::new_for(
+                                                    Tree::None,
+                                                    inc_tree,
+                                                    cond_tree,
+                                                    stmt_tree,
+                                                ),
+                                                tokens,
+                                            ),
+                                            Err(e) => return Err(e),
+                                        },
+                                        Err(e) => return Err(e),
+                                    },
+                                },
+                                _ => return Err(semicolon_error()),
+                            },
+                            Err(e) => return Err(e),
+                        },
+                    },
+                    _ => match expr(tokens[2..].to_vec()) {
+                        Ok((init_tree, tokens)) => match tokens[0] {
+                            Token::Semicolon => match tokens[1] {
+                                Token::Semicolon => match tokens[2] {
+                                    Token::RParen => match stmt(tokens[3..].to_vec()) {
+                                        Ok((stmt_tree, tokens)) => (
+                                            Tree::new_for(
+                                                init_tree,
+                                                Tree::None,
+                                                Tree::None,
+                                                stmt_tree,
+                                            ),
+                                            tokens,
+                                        ),
+                                        Err(e) => return Err(e),
+                                    },
+                                    _ => match expr(tokens[3..].to_vec()) {
+                                        Ok((cond_tree, tokens)) => match tokens[0] {
+                                            Token::RParen => match stmt(tokens[1..].to_vec()) {
+                                                Ok((stmt_tree, tokens)) => (
+                                                    Tree::new_for(
+                                                        init_tree,
+                                                        Tree::None,
+                                                        cond_tree,
+                                                        stmt_tree,
+                                                    ),
+                                                    tokens,
+                                                ),
+                                                Err(e) => return Err(e),
+                                            },
+                                            _ => return Err(semicolon_error()),
+                                        },
+                                        Err(e) => return Err(e),
+                                    },
+                                },
+                                _ => match expr(tokens[2..].to_vec()) {
+                                    Ok((inc_tree, tokens)) => match tokens[0] {
+                                        Token::Semicolon => match tokens[1] {
+                                            Token::RParen => match stmt(tokens[2..].to_vec()) {
+                                                Ok((stmt_tree, tokens)) => (
+                                                    Tree::new_for(
+                                                        init_tree,
+                                                        inc_tree,
+                                                        Tree::None,
+                                                        stmt_tree,
+                                                    ),
+                                                    tokens,
+                                                ),
+                                                Err(e) => return Err(e),
+                                            },
+                                            _ => match expr(tokens[2..].to_vec()) {
+                                                Ok((cond_tree, tokens)) => match tokens[0] {
+                                                    Token::RParen => {
+                                                        match stmt(tokens[1..].to_vec()) {
+                                                            Ok((stmt_tree, tokens)) => (
+                                                                Tree::new_for(
+                                                                    init_tree, inc_tree, cond_tree,
+                                                                    stmt_tree,
+                                                                ),
+                                                                tokens,
+                                                            ),
+                                                            Err(e) => return Err(e),
+                                                        }
+                                                    }
+                                                    _ => return Err(semicolon_error()),
+                                                },
+                                                Err(e) => return Err(e),
+                                            },
+                                        },
+                                        _ => return Err(semicolon_error()),
+                                    },
+                                    Err(e) => return Err(e),
+                                },
+                            },
+                            _ => return Err(semicolon_error()),
+                        },
+                        Err(e) => return Err(e),
+                    },
+                },
+                _ => return Err(lparen_error()),
             },
+            Token::Return => parse_return(tokens[1..].to_vec())?,
             _ => match expr(tokens) {
                 Ok((tree, tokens)) => (tree, tokens),
                 Err(e) => return Err(e),
             },
         };
         if tokens.is_empty() {
-            Err("expected semicolon but disappear".to_owned())
+            Err(semicolon_error())
         } else {
             match tokens[0] {
                 Token::Semicolon => Ok((tree, tokens[1..].to_vec())),
-                _ => Err("expected semicolon but disappear".to_owned()),
+                _ => Err(semicolon_error()),
             }
         }
     }
+}
+
+fn parse_return(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    let (expr_tree, tokens) = expr(tokens)?;
+    Ok((Tree::new_return(expr_tree), tokens))
+}
+
+fn parse_if_else(
+    expr_tree: Tree,
+    stmt_tree: Tree,
+    tokens: Vec<Token>,
+) -> Result<(Tree, Vec<Token>), TreeError> {
+    let (else_stmt, tokens) = stmt(tokens)?;
+    Ok((Tree::new_if_else(expr_tree, stmt_tree, else_stmt), tokens))
+}
+
+fn parse_if(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    let (stmt_tree, tokens) = stmt(tokens)?;
+    match tokens[0] {
+        Token::Else => parse_if_else(expr_tree, stmt_tree, tokens[1..].to_vec()),
+        _ => Ok((Tree::new_if(expr_tree, stmt_tree), tokens)),
+    }
+}
+
+fn parse_while(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    let (stmt_tree, tokens) = stmt(tokens)?;
+    Ok((Tree::new_while(expr_tree, stmt_tree), tokens))
+}
+
+fn parse_paren_expr(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    match tokens[0] {
+        Token::LParen => {
+            let (expr_tree, tokens) = expr(tokens[1..].to_vec())?;
+            match tokens[0] {
+                Token::RParen => Ok((expr_tree, tokens[1..].to_vec())),
+                _ => Err(rparen_error()),
+            }
+        }
+        _ => Err(lparen_error()),
+    }
+}
+
+fn semicolon_error() -> TreeError {
+    "expected semicolon but disappear".to_owned()
+}
+
+fn lparen_error() -> TreeError {
+    "expected '(' but disappear".to_owned()
+}
+
+fn rparen_error() -> TreeError {
+    "expected ')' but disappear".to_owned()
 }
 
 fn expr(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
@@ -456,5 +652,18 @@ column * row;
         let (query, _ident_count) = variable_analysis(lexer("return 0;").unwrap()).unwrap();
 
         assert_eq!(Ok(vec![Tree::new_return(Tree::new_int(0))]), parser(query));
+    }
+
+    #[test]
+    fn if_test() {
+        let (query, _ident_count) = variable_analysis(lexer("if(0)return0;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_if(
+                Tree::new_int(0),
+                Tree::new_return(Tree::new_int(0))
+            )]),
+            parser(query)
+        );
     }
 }

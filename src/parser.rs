@@ -618,4 +618,18 @@ column * row;
             parser(query)
         );
     }
+
+    #[test]
+    fn while_test() {
+        let (query, _ident_count) =
+            variable_analysis(lexer("while (2 > 1) 1 + 1;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_while(
+                Tree::new_tree(NodeKind::Less, Tree::new_int(1), Tree::new_int(2)),
+                Tree::new_tree(NodeKind::Add, Tree::new_int(1), Tree::new_int(1))
+            )]),
+            parser(query)
+        );
+    }
 }

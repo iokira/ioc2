@@ -632,4 +632,19 @@ column * row;
             parser(query)
         );
     }
+
+    #[test]
+    fn for_test() {
+        let (query, _ident_count) = variable_analysis(lexer("for(;;)0;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_for(
+                Tree::None,
+                Tree::None,
+                Tree::None,
+                Tree::new_int(0)
+            )]),
+            parser(query)
+        );
+    }
 }

@@ -260,7 +260,31 @@ fn ret() -> String {
 }
 
 fn lbegin(n: usize) -> String {
-    format!(".Lbegin{:0width$}", n, width = 3)
+    format!(".Lbegin{:0width$}\n", n, width = 3)
+}
+
+fn lend(n: usize) -> String {
+    format!(".Lend{:0width$}\n", n, width = 3)
+}
+
+fn lelse(n: usize) -> String {
+    format!(".Lelse{:0width$}\n", n, width = 3)
+}
+
+fn je_lend(n: usize) -> String {
+    format!("\tje .Lend{:0width$}\n", n, width = 3)
+}
+
+fn je_lelse(n: usize) -> String {
+    format!("\tje .Lelse{:0width$}\n", n, width = 3)
+}
+
+fn jmp_lend(n: usize) -> String {
+    format!("\tjmp .Lend{:0width$}\n", n, width = 3)
+}
+
+fn jmp_lbegin(n: usize) -> String {
+    format!("\tjmp .Lbegin{:0width$}\n", n, width = 3)
 }
 
 #[cfg(test)]

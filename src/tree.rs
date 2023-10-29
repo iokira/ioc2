@@ -57,11 +57,11 @@ impl Tree {
         Tree::While(Box::new(expr), Box::new(stmt))
     }
 
-    pub fn new_for(init: Tree, inc: Tree, cond: Tree, stmt: Tree) -> Tree {
+    pub fn new_for(init_expr: Tree, cond_expr: Tree, loop_expr: Tree, stmt: Tree) -> Tree {
         Tree::For(
-            Box::new(init),
-            Box::new(inc),
-            Box::new(cond),
+            Box::new(init_expr),
+            Box::new(cond_expr),
+            Box::new(loop_expr),
             Box::new(stmt),
         )
     }

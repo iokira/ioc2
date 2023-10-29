@@ -236,9 +236,13 @@ fn parse_while(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
 }
 
 fn parse_for(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
-    match tokens[0] {
-        Token::LParen => parse_init_tree(tokens[1..].to_vec()),
-        _ => return Err(lparen_error()),
+    if tokens.is_empty() {
+        Err(lparen_error())
+    } else {
+        match tokens[0] {
+            Token::LParen => parse_init_tree(tokens[1..].to_vec()),
+            _ => return Err(lparen_error()),
+        }
     }
 }
 
@@ -253,9 +257,13 @@ fn parse_if_else(
 
 fn parse_if_tree(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     let (stmt_tree, tokens) = stmt(tokens)?;
-    match tokens[0] {
-        Token::Else => parse_if_else(expr_tree, stmt_tree, tokens[1..].to_vec()),
-        _ => Ok((Tree::new_if(expr_tree, stmt_tree), tokens)),
+    if tokens.is_empty() {
+        Err("expected else statement or semicolon but disappear".to_owned())
+    } else {
+        match tokens[0] {
+            Token::Else => parse_if_else(expr_tree, stmt_tree, tokens[1..].to_vec()),
+            _ => Ok((Tree::new_if(expr_tree, stmt_tree), tokens)),
+        }
     }
 }
 
@@ -266,72 +274,88 @@ fn parse_while_tree(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<To
 
 fn parse_for_tree(
     init_tree: Tree,
-    inc_tree: Tree,
     cond_tree: Tree,
+    loop_tree: Tree,
     tokens: Vec<Token>,
 ) -> Result<(Tree, Vec<Token>), TreeError> {
     let (stmt_tree, tokens) = stmt(tokens)?;
     Ok((
-        Tree::new_for(init_tree, inc_tree, cond_tree, stmt_tree),
+        Tree::new_for(init_tree, cond_tree, loop_tree, stmt_tree),
         tokens,
     ))
 }
 
-fn parse_cond_tree(
+fn parse_loop_tree(
     init_tree: Tree,
-    inc_tree: Tree,
+    cond_tree: Tree,
     tokens: Vec<Token>,
 ) -> Result<(Tree, Vec<Token>), TreeError> {
-    match tokens[0] {
-        Token::RParen => parse_for_tree(init_tree, inc_tree, Tree::None, tokens[1..].to_vec()),
-        _ => {
-            let (cond_tree, tokens) = expr(tokens)?;
-            match tokens[0] {
-                Token::RParen => {
-                    parse_for_tree(init_tree, inc_tree, cond_tree, tokens[1..].to_vec())
+    if tokens.is_empty() {
+        Err("expected loop expression or ')' but disappear".to_owned())
+    } else {
+        match tokens[0] {
+            Token::RParen => parse_for_tree(init_tree, cond_tree, Tree::None, tokens[1..].to_vec()),
+            _ => {
+                let (loop_tree, tokens) = expr(tokens)?;
+                match tokens[0] {
+                    Token::RParen => {
+                        parse_for_tree(init_tree, cond_tree, loop_tree, tokens[1..].to_vec())
+                    }
+                    _ => Err(rparen_error()),
                 }
-                _ => Err(rparen_error()),
             }
         }
     }
 }
 
-fn parse_inc_tree(init_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
-    match tokens[0] {
-        Token::Semicolon => parse_cond_tree(init_tree, Tree::None, tokens[1..].to_vec()),
-        _ => {
-            let (inc_tree, tokens) = expr(tokens)?;
-            match tokens[0] {
-                Token::Semicolon => parse_cond_tree(init_tree, inc_tree, tokens[1..].to_vec()),
-                _ => Err(semicolon_error()),
+fn parse_cond_tree(init_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    if tokens.is_empty() {
+        Err("expected semicolon or cond-expression but disappear".to_owned())
+    } else {
+        match tokens[0] {
+            Token::Semicolon => parse_loop_tree(init_tree, Tree::None, tokens[1..].to_vec()),
+            _ => {
+                let (cond_tree, tokens) = expr(tokens)?;
+                match tokens[0] {
+                    Token::Semicolon => parse_loop_tree(init_tree, cond_tree, tokens[1..].to_vec()),
+                    _ => Err(semicolon_error()),
+                }
             }
         }
     }
 }
 
 fn parse_init_tree(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
-    match tokens[0] {
-        Token::Semicolon => parse_inc_tree(Tree::None, tokens[1..].to_vec()),
-        _ => {
-            let (init_tree, tokens) = expr(tokens)?;
-            match tokens[0] {
-                Token::Semicolon => parse_inc_tree(init_tree, tokens[1..].to_vec()),
-                _ => Err(semicolon_error()),
+    if tokens.is_empty() {
+        Err("expected semicolon or init-expression but disappear".to_owned())
+    } else {
+        match tokens[0] {
+            Token::Semicolon => parse_cond_tree(Tree::None, tokens[1..].to_vec()),
+            _ => {
+                let (init_tree, tokens) = expr(tokens)?;
+                match tokens[0] {
+                    Token::Semicolon => parse_cond_tree(init_tree, tokens[1..].to_vec()),
+                    _ => Err(semicolon_error()),
+                }
             }
         }
     }
 }
 
 fn parse_paren_expr(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
-    match tokens[0] {
-        Token::LParen => {
-            let (expr_tree, tokens) = expr(tokens[1..].to_vec())?;
-            match tokens[0] {
-                Token::RParen => Ok((expr_tree, tokens[1..].to_vec())),
-                _ => Err(rparen_error()),
+    if tokens.is_empty() {
+        Err(lparen_error())
+    } else {
+        match tokens[0] {
+            Token::LParen => {
+                let (expr_tree, tokens) = expr(tokens[1..].to_vec())?;
+                match tokens[0] {
+                    Token::RParen => Ok((expr_tree, tokens[1..].to_vec())),
+                    _ => Err(rparen_error()),
+                }
             }
+            _ => Err(lparen_error()),
         }
-        _ => Err(lparen_error()),
     }
 }
 

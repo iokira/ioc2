@@ -25,153 +25,9 @@ fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
         Err(semicolon_error())
     } else {
         let (tree, tokens) = match tokens[0] {
-            Token::If => {
-                let (expr_tree, tokens) = parse_paren_expr(tokens[1..].to_vec())?;
-                parse_if(expr_tree, tokens)?
-            }
-            Token::While => {
-                let (expr_tree, tokens) = parse_paren_expr(tokens[1..].to_vec())?;
-                parse_while(expr_tree, tokens)?
-            }
-            Token::For => match tokens[1] {
-                Token::LParen => match tokens[2] {
-                    Token::Semicolon => match tokens[3] {
-                        Token::Semicolon => match tokens[4] {
-                            Token::RParen => match stmt(tokens[5..].to_vec()) {
-                                Ok((stmt_tree, tokens)) => (
-                                    Tree::new_for(Tree::None, Tree::None, Tree::None, stmt_tree),
-                                    tokens,
-                                ),
-                                Err(e) => return Err(e),
-                            },
-                            _ => match expr(tokens[5..].to_vec()) {
-                                Ok((cond_tree, tokens)) => match stmt(tokens) {
-                                    Ok((stmt_tree, tokens)) => (
-                                        Tree::new_for(Tree::None, Tree::None, cond_tree, stmt_tree),
-                                        tokens,
-                                    ),
-                                    Err(e) => return Err(e),
-                                },
-                                Err(e) => return Err(e),
-                            },
-                        },
-                        _ => match expr(tokens[4..].to_vec()) {
-                            Ok((inc_tree, tokens)) => match tokens[0] {
-                                Token::Semicolon => match tokens[1] {
-                                    Token::RParen => match stmt(tokens[5..].to_vec()) {
-                                        Ok((stmt_tree, tokens)) => (
-                                            Tree::new_for(
-                                                Tree::None,
-                                                inc_tree,
-                                                Tree::None,
-                                                stmt_tree,
-                                            ),
-                                            tokens,
-                                        ),
-                                        Err(e) => return Err(e),
-                                    },
-                                    _ => match expr(tokens[5..].to_vec()) {
-                                        Ok((cond_tree, tokens)) => match stmt(tokens) {
-                                            Ok((stmt_tree, tokens)) => (
-                                                Tree::new_for(
-                                                    Tree::None,
-                                                    inc_tree,
-                                                    cond_tree,
-                                                    stmt_tree,
-                                                ),
-                                                tokens,
-                                            ),
-                                            Err(e) => return Err(e),
-                                        },
-                                        Err(e) => return Err(e),
-                                    },
-                                },
-                                _ => return Err(semicolon_error()),
-                            },
-                            Err(e) => return Err(e),
-                        },
-                    },
-                    _ => match expr(tokens[2..].to_vec()) {
-                        Ok((init_tree, tokens)) => match tokens[0] {
-                            Token::Semicolon => match tokens[1] {
-                                Token::Semicolon => match tokens[2] {
-                                    Token::RParen => match stmt(tokens[3..].to_vec()) {
-                                        Ok((stmt_tree, tokens)) => (
-                                            Tree::new_for(
-                                                init_tree,
-                                                Tree::None,
-                                                Tree::None,
-                                                stmt_tree,
-                                            ),
-                                            tokens,
-                                        ),
-                                        Err(e) => return Err(e),
-                                    },
-                                    _ => match expr(tokens[3..].to_vec()) {
-                                        Ok((cond_tree, tokens)) => match tokens[0] {
-                                            Token::RParen => match stmt(tokens[1..].to_vec()) {
-                                                Ok((stmt_tree, tokens)) => (
-                                                    Tree::new_for(
-                                                        init_tree,
-                                                        Tree::None,
-                                                        cond_tree,
-                                                        stmt_tree,
-                                                    ),
-                                                    tokens,
-                                                ),
-                                                Err(e) => return Err(e),
-                                            },
-                                            _ => return Err(semicolon_error()),
-                                        },
-                                        Err(e) => return Err(e),
-                                    },
-                                },
-                                _ => match expr(tokens[2..].to_vec()) {
-                                    Ok((inc_tree, tokens)) => match tokens[0] {
-                                        Token::Semicolon => match tokens[1] {
-                                            Token::RParen => match stmt(tokens[2..].to_vec()) {
-                                                Ok((stmt_tree, tokens)) => (
-                                                    Tree::new_for(
-                                                        init_tree,
-                                                        inc_tree,
-                                                        Tree::None,
-                                                        stmt_tree,
-                                                    ),
-                                                    tokens,
-                                                ),
-                                                Err(e) => return Err(e),
-                                            },
-                                            _ => match expr(tokens[2..].to_vec()) {
-                                                Ok((cond_tree, tokens)) => match tokens[0] {
-                                                    Token::RParen => {
-                                                        match stmt(tokens[1..].to_vec()) {
-                                                            Ok((stmt_tree, tokens)) => (
-                                                                Tree::new_for(
-                                                                    init_tree, inc_tree, cond_tree,
-                                                                    stmt_tree,
-                                                                ),
-                                                                tokens,
-                                                            ),
-                                                            Err(e) => return Err(e),
-                                                        }
-                                                    }
-                                                    _ => return Err(semicolon_error()),
-                                                },
-                                                Err(e) => return Err(e),
-                                            },
-                                        },
-                                        _ => return Err(semicolon_error()),
-                                    },
-                                    Err(e) => return Err(e),
-                                },
-                            },
-                            _ => return Err(semicolon_error()),
-                        },
-                        Err(e) => return Err(e),
-                    },
-                },
-                _ => return Err(lparen_error()),
-            },
+            Token::If => parse_if(tokens[1..].to_vec())?,
+            Token::While => parse_while(tokens[1..].to_vec())?,
+            Token::For => parse_for(tokens[1..].to_vec())?,
             Token::Return => parse_return(tokens[1..].to_vec())?,
             _ => match expr(tokens) {
                 Ok((tree, tokens)) => (tree, tokens),
@@ -203,7 +59,7 @@ fn parse_if_else(
     Ok((Tree::new_if_else(expr_tree, stmt_tree, else_stmt), tokens))
 }
 
-fn parse_if(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+fn parse_if_tree(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     let (stmt_tree, tokens) = stmt(tokens)?;
     match tokens[0] {
         Token::Else => parse_if_else(expr_tree, stmt_tree, tokens[1..].to_vec()),
@@ -211,9 +67,84 @@ fn parse_if(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), T
     }
 }
 
-fn parse_while(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+fn parse_if(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    let (expr_tree, tokens) = parse_paren_expr(tokens)?;
+    parse_if_tree(expr_tree, tokens)
+}
+
+fn parse_while_tree(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     let (stmt_tree, tokens) = stmt(tokens)?;
     Ok((Tree::new_while(expr_tree, stmt_tree), tokens))
+}
+
+fn parse_while(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    let (expr_tree, tokens) = parse_paren_expr(tokens)?;
+    parse_while_tree(expr_tree, tokens)
+}
+
+fn parse_for_tree(
+    init_tree: Tree,
+    inc_tree: Tree,
+    cond_tree: Tree,
+    tokens: Vec<Token>,
+) -> Result<(Tree, Vec<Token>), TreeError> {
+    let (stmt_tree, tokens) = stmt(tokens)?;
+    Ok((
+        Tree::new_for(init_tree, inc_tree, cond_tree, stmt_tree),
+        tokens,
+    ))
+}
+
+fn parse_cond_tree(
+    init_tree: Tree,
+    inc_tree: Tree,
+    tokens: Vec<Token>,
+) -> Result<(Tree, Vec<Token>), TreeError> {
+    match tokens[0] {
+        Token::RParen => parse_for_tree(init_tree, inc_tree, Tree::None, tokens[1..].to_vec()),
+        _ => {
+            let (cond_tree, tokens) = expr(tokens)?;
+            match tokens[0] {
+                Token::RParen => {
+                    parse_for_tree(init_tree, inc_tree, cond_tree, tokens[1..].to_vec())
+                }
+                _ => Err(rparen_error()),
+            }
+        }
+    }
+}
+
+fn parse_inc_tree(init_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    match tokens[0] {
+        Token::Semicolon => parse_cond_tree(init_tree, Tree::None, tokens[1..].to_vec()),
+        _ => {
+            let (inc_tree, tokens) = expr(tokens)?;
+            match tokens[0] {
+                Token::Semicolon => parse_cond_tree(init_tree, inc_tree, tokens[1..].to_vec()),
+                _ => Err(semicolon_error()),
+            }
+        }
+    }
+}
+
+fn parse_init_tree(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    match tokens[0] {
+        Token::Semicolon => parse_inc_tree(Tree::None, tokens[1..].to_vec()),
+        _ => {
+            let (init_tree, tokens) = expr(tokens)?;
+            match tokens[0] {
+                Token::Semicolon => parse_inc_tree(init_tree, tokens[1..].to_vec()),
+                _ => Err(semicolon_error()),
+            }
+        }
+    }
+}
+
+fn parse_for(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    match tokens[0] {
+        Token::LParen => parse_init_tree(tokens[1..].to_vec()),
+        _ => return Err(lparen_error()),
+    }
 }
 
 fn parse_paren_expr(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {

@@ -128,24 +128,32 @@ fn expect_whitespace(s: &str) -> bool {
     count_whitespace(s) > 0
 }
 
+fn expect_no_ident_str(s: &str, expect: &str) -> bool {
+    expect_str(s, expect)
+        && s[expect.len()..]
+            .chars()
+            .next()
+            .is_some_and(|c| !is_ident_char(c))
+}
+
 fn expect_return(s: &str) -> bool {
-    expect_str(s, "return") && s[6..].chars().next().is_some_and(|c| !is_ident_char(c))
+    expect_no_ident_str(s, "return")
 }
 
 fn expect_if(s: &str) -> bool {
-    expect_str(s, "if") && s[2..].chars().next().is_some_and(|c| !is_ident_char(c))
+    expect_no_ident_str(s, "if")
 }
 
 fn expect_else(s: &str) -> bool {
-    expect_str(s, "else") && s[4..].chars().next().is_some_and(|c| !is_ident_char(c))
+    expect_no_ident_str(s, "else")
 }
 
 fn expect_while(s: &str) -> bool {
-    expect_str(s, "while") && s[5..].chars().next().is_some_and(|c| !is_ident_char(c))
+    expect_no_ident_str(s, "while")
 }
 
 fn expect_for(s: &str) -> bool {
-    expect_str(s, "for") && s[3..].chars().next().is_some_and(|c| !is_ident_char(c))
+    expect_no_ident_str(s, "for")
 }
 
 fn is_ident_char(c: char) -> bool {
@@ -292,6 +300,50 @@ mod tests {
         assert!(expect_return(s1));
         assert!(expect_return(s2));
         assert!(!expect_return(s3));
+    }
+
+    #[test]
+    fn expect_if_test() {
+        let s1 = "if abc";
+        let s2 = "if1";
+        let s3 = "ifabc";
+
+        assert!(expect_if(s1));
+        assert!(expect_if(s2));
+        assert!(!expect_if(s3));
+    }
+
+    #[test]
+    fn expect_else_test() {
+        let s1 = "else abc";
+        let s2 = "else1";
+        let s3 = "elseabc";
+
+        assert!(expect_else(s1));
+        assert!(expect_else(s2));
+        assert!(!expect_else(s3));
+    }
+
+    #[test]
+    fn expect_while_test() {
+        let s1 = "while abc";
+        let s2 = "while1";
+        let s3 = "whileabc";
+
+        assert!(expect_while(s1));
+        assert!(expect_while(s2));
+        assert!(!expect_while(s3));
+    }
+
+    #[test]
+    fn expect_for_test() {
+        let s1 = "for abc";
+        let s2 = "for1";
+        let s3 = "forabc";
+
+        assert!(expect_for(s1));
+        assert!(expect_for(s2));
+        assert!(!expect_for(s3));
     }
 
     #[test]

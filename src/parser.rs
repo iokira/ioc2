@@ -29,16 +29,19 @@ fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
             Token::While => parse_while(tokens[1..].to_vec())?,
             Token::For => parse_for(tokens[1..].to_vec())?,
             Token::Return => parse_return(tokens[1..].to_vec())?,
-            _ => expr(tokens)?,
-        };
-        if tokens.is_empty() {
-            Err(semicolon_error())
-        } else {
-            match tokens[0] {
-                Token::Semicolon => Ok((tree, tokens[1..].to_vec())),
-                _ => Err(semicolon_error()),
+            _ => {
+                let (expr_tree, tokens) = expr(tokens)?;
+                if tokens.is_empty() {
+                    return Err(semicolon_error());
+                } else {
+                    match tokens[0] {
+                        Token::Semicolon => (expr_tree, tokens[1..].to_vec()),
+                        _ => return Err(semicolon_error()),
+                    }
+                }
             }
-        }
+        };
+        Ok((tree, tokens))
     }
 }
 
@@ -222,7 +225,14 @@ fn primary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
 
 fn parse_return(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     let (expr_tree, tokens) = expr(tokens)?;
-    Ok((Tree::new_return(expr_tree), tokens))
+    if tokens.is_empty() {
+        return Err(semicolon_error());
+    } else {
+        match tokens[0] {
+            Token::Semicolon => Ok((Tree::new_return(expr_tree), tokens[1..].to_vec())),
+            _ => return Err(semicolon_error()),
+        }
+    }
 }
 
 fn parse_if(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
@@ -258,7 +268,7 @@ fn parse_if_else(
 fn parse_if_tree(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     let (stmt_tree, tokens) = stmt(tokens)?;
     if tokens.is_empty() {
-        Err("expected else statement or semicolon but disappear".to_owned())
+        Ok((Tree::new_if(expr_tree, stmt_tree), tokens))
     } else {
         match tokens[0] {
             Token::Else => parse_if_else(expr_tree, stmt_tree, tokens[1..].to_vec()),

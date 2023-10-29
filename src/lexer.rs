@@ -130,10 +130,10 @@ fn expect_whitespace(s: &str) -> bool {
 
 fn expect_no_ident_str(s: &str, expect: &str) -> bool {
     expect_str(s, expect)
-        && s[expect.len()..]
+        && !s[expect.len()..]
             .chars()
             .next()
-            .is_some_and(|c| !is_ident_char(c))
+            .is_some_and(|c| is_ident_char(c))
 }
 
 fn expect_return(s: &str) -> bool {

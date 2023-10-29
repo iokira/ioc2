@@ -225,6 +225,23 @@ fn parse_return(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     Ok((Tree::new_return(expr_tree), tokens))
 }
 
+fn parse_if(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    let (expr_tree, tokens) = parse_paren_expr(tokens)?;
+    parse_if_tree(expr_tree, tokens)
+}
+
+fn parse_while(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    let (expr_tree, tokens) = parse_paren_expr(tokens)?;
+    parse_while_tree(expr_tree, tokens)
+}
+
+fn parse_for(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
+    match tokens[0] {
+        Token::LParen => parse_init_tree(tokens[1..].to_vec()),
+        _ => return Err(lparen_error()),
+    }
+}
+
 fn parse_if_else(
     expr_tree: Tree,
     stmt_tree: Tree,
@@ -242,19 +259,9 @@ fn parse_if_tree(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token
     }
 }
 
-fn parse_if(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
-    let (expr_tree, tokens) = parse_paren_expr(tokens)?;
-    parse_if_tree(expr_tree, tokens)
-}
-
 fn parse_while_tree(expr_tree: Tree, tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     let (stmt_tree, tokens) = stmt(tokens)?;
     Ok((Tree::new_while(expr_tree, stmt_tree), tokens))
-}
-
-fn parse_while(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
-    let (expr_tree, tokens) = parse_paren_expr(tokens)?;
-    parse_while_tree(expr_tree, tokens)
 }
 
 fn parse_for_tree(
@@ -312,13 +319,6 @@ fn parse_init_tree(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> 
                 _ => Err(semicolon_error()),
             }
         }
-    }
-}
-
-fn parse_for(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
-    match tokens[0] {
-        Token::LParen => parse_init_tree(tokens[1..].to_vec()),
-        _ => return Err(lparen_error()),
     }
 }
 

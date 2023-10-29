@@ -258,3 +258,19 @@ pub fn gen_ret() -> String {
 fn ret() -> String {
     "\tret\n".to_owned()
 }
+
+fn lbegin(n: usize) -> String {
+    format!(".Lbegin{:0width$}", n, width = 3)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn lbegin_test() {
+        assert_eq!(".Lbegin001", lbegin(1));
+        assert_eq!(".Lbegin010", lbegin(10));
+        assert_eq!(".Lbegin100", lbegin(100));
+    }
+}

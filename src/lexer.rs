@@ -132,6 +132,22 @@ fn expect_return(s: &str) -> bool {
     expect_str(s, "return") && s[6..].chars().next().is_some_and(|c| !is_ident_char(c))
 }
 
+fn expect_if(s: &str) -> bool {
+    expect_str(s, "if") && s[2..].chars().next().is_some_and(|c| !is_ident_char(c))
+}
+
+fn expect_else(s: &str) -> bool {
+    expect_str(s, "else") && s[4..].chars().next().is_some_and(|c| !is_ident_char(c))
+}
+
+fn expect_while(s: &str) -> bool {
+    expect_str(s, "while") && s[5..].chars().next().is_some_and(|c| !is_ident_char(c))
+}
+
+fn expect_for(s: &str) -> bool {
+    expect_str(s, "for") && s[3..].chars().next().is_some_and(|c| !is_ident_char(c))
+}
+
 fn is_ident_char(c: char) -> bool {
     c.is_alphabetic() || c == '_'
 }

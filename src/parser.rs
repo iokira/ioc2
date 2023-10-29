@@ -603,4 +603,19 @@ column * row;
             parser(query)
         );
     }
+
+    #[test]
+    fn if_else_test() {
+        let (query, _ident_count) =
+            variable_analysis(lexer("if(0)return0;else return1;").unwrap()).unwrap();
+
+        assert_eq!(
+            Ok(vec![Tree::new_if_else(
+                Tree::new_int(0),
+                Tree::new_return(Tree::new_int(0)),
+                Tree::new_return(Tree::new_int(1))
+            )]),
+            parser(query)
+        );
+    }
 }

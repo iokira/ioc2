@@ -36,23 +36,3 @@ pub enum TokenError {
     TokenizeError,
     InvalidChar(char),
 }
-
-impl From<String> for Token {
-    fn from(value: String) -> Self {
-        Token::Ident(Ident { name: value })
-    }
-}
-
-impl<'a> From<&'a str> for Token {
-    fn from(value: &'a str) -> Self {
-        Token::Ident(Ident {
-            name: value.to_string(),
-        })
-    }
-}
-
-impl From<Int> for Token {
-    fn from(value: Int) -> Self {
-        Token::Integer(value)
-    }
-}

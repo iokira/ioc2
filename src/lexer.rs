@@ -157,7 +157,7 @@ fn expect_no_ident_str(s: &str, expect: &str) -> bool {
         && !s[expect.len()..]
             .chars()
             .next()
-            .is_some_and(|c| is_ident_char(c))
+            .is_some_and(is_ident_char)
 }
 
 fn expect_return(s: &str) -> bool {

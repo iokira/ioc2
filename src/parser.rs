@@ -201,11 +201,11 @@ fn primary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
 fn parse_return(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     let (expr_tree, tokens) = expr(tokens)?;
     if tokens.is_empty() {
-        return Err(semicolon_error());
+        Err(semicolon_error())
     } else {
         match tokens[0] {
             Token::Semicolon => Ok((Tree::new_return(expr_tree), tokens[1..].to_vec())),
-            _ => return Err(semicolon_error()),
+            _ => Err(semicolon_error()),
         }
     }
 }
@@ -226,7 +226,7 @@ fn parse_for(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     } else {
         match tokens[0] {
             Token::LParen => parse_init_tree(tokens[1..].to_vec()),
-            _ => return Err(lparen_error()),
+            _ => Err(lparen_error()),
         }
     }
 }

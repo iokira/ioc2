@@ -294,3 +294,100 @@ pub fn gen_ret() -> String {
 fn ret() -> String {
     "\tret\n".to_owned()
 }
+
+fn lbegin(n: usize) -> String {
+    format!("Lbegin{:0width$}:\n", n, width = 3)
+}
+
+fn lend(n: usize) -> String {
+    format!("Lend{:0width$}:\n", n, width = 3)
+}
+
+fn lelse(n: usize) -> String {
+    format!("Lelse{:0width$}:\n", n, width = 3)
+}
+
+fn b_lbegin(n: usize) -> String {
+    format!("\tb Lbegin{:0width$}\n", n, width = 3)
+}
+
+fn b_lend(n: usize) -> String {
+    format!("\tb Lend{:0width$}\n", n, width = 3)
+}
+
+fn b_lelse(n: usize) -> String {
+    format!("\tb Lelse{:0width$}\n", n, width = 3)
+}
+
+fn b_eq_lbegin(n: usize) -> String {
+    format!("\tb.EQ Lbegin{:0width$}\n", n, width = 3)
+}
+
+fn b_eq_lend(n: usize) -> String {
+    format!("\tb.EQ Lend{:0width$}\n", n, width = 3)
+}
+
+fn b_eq_lelse(n: usize) -> String {
+    format!("\tb.EQ Lelse{:0width$}\n", n, width = 3)
+}
+
+pub fn gen_if(expr: &str, stmt: &str, n: usize) -> String {
+    format!(
+        "{}{}\tcmp {}, {}\n{}{}{}",
+        expr,
+        pop(Operand::Register(Register::R0)),
+        Operand::Register(Register::R0),
+        Operand::Num(0),
+        b_eq_lend(n),
+        stmt,
+        lend(n)
+    )
+}
+
+pub fn gen_if_else(expr: &str, stmt: &str, stmt_else: &str, n: usize) -> String {
+    format!(
+        "{}{}\tcmp {}, {}\n{}{}{}{}{}{}",
+        expr,
+        pop(Operand::Register(Register::R0)),
+        Operand::Register(Register::R0),
+        Operand::Num(0),
+        b_eq_lelse(n),
+        stmt,
+        b_lend(n),
+        lelse(n),
+        stmt_else,
+        lend(n),
+    )
+}
+
+pub fn gen_while(expr: &str, stmt: &str, n: usize) -> String {
+    format!(
+        "{}{}{}\tcmp {}, {}\n{}{}{}{}",
+        lbegin(n),
+        expr,
+        pop(Operand::Register(Register::R0)),
+        Operand::Register(Register::R0),
+        Operand::Num(0),
+        b_eq_lend(n),
+        stmt,
+        b_lbegin(n),
+        lend(n),
+    )
+}
+
+pub fn gen_for(init_expr: &str, cond_expr: &str, loop_expr: &str, stmt: &str, n: usize) -> String {
+    format!(
+        "{}{}{}{}\tcmp {}, {}\n{}{}{}{}{}",
+        init_expr,
+        lbegin(n),
+        cond_expr,
+        pop(Operand::Register(Register::R0)),
+        Operand::Register(Register::R0),
+        Operand::Num(0),
+        b_eq_lend(n),
+        stmt,
+        loop_expr,
+        b_lbegin(n),
+        lend(n)
+    )
+}

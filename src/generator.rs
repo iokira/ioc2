@@ -11,7 +11,7 @@ pub fn generator(trees: Vec<Tree>, ident_count: usize) -> Result<String, Generat
     asm.push_str(&memory_allocate(ident_count * 8));
 
     for tree in trees {
-        generate_assembly(&mut asm, tree)?;
+        asm.push_str(&generate_assembly(tree)?);
         asm.push_str(&stmt_epilogue());
     }
 
@@ -20,62 +20,61 @@ pub fn generator(trees: Vec<Tree>, ident_count: usize) -> Result<String, Generat
     Ok(asm)
 }
 
-fn generate_val(assembly: &mut String, offset: usize) {
-    assembly.push_str(&gen_val(offset));
+fn generate_val(offset: usize) -> String {
+    gen_val(offset)
 }
 
-pub fn generate_assembly(assembly: &mut String, tree: Tree) -> Result<(), GenerateError> {
-    if let Tree::Return(t) = tree {
-        generate_assembly(assembly, *t)?;
-        assembly.push_str(&gen_ret());
-        return Ok(());
-    }
-
-    if let Tree::Int(n) = tree {
-        assembly.push_str(&push(Operand::Num(n)));
-        return Ok(());
-    }
-
-    if let Tree::Val { offset } = tree {
-        generate_val(assembly, offset);
-        assembly.push_str(&pop_val());
-        return Ok(());
-    }
-
-    if let Tree::Node(kind, lhs, rhs) = tree {
-        if let NodeKind::Assign = kind {
-            if let Tree::Val { offset } = *lhs {
-                generate_val(assembly, offset);
-            } else {
-                return Err(
-                    "The left-hand side value of the assignment is not a variable".to_owned(),
-                );
-            }
-            generate_assembly(assembly, *rhs)?;
-            assembly.push_str(&pop_lvar());
-            return Ok(());
+pub fn generate_assembly(tree: Tree) -> Result<String, GenerateError> {
+    match tree {
+        Tree::None => Ok(String::new()),
+        Tree::Int(n) => Ok(push(Operand::Num(n))),
+        Tree::Val { offset } => {
+            let mut str = generate_val(offset);
+            str.push_str(&pop_val());
+            Ok(str)
         }
-
-        generate_assembly(assembly, *lhs)?;
-        generate_assembly(assembly, *rhs)?;
-
-        assembly.push_str(&pop_arg());
-
-        match kind {
-            NodeKind::Equality => assembly.push_str(&eq_arg()),
-            NodeKind::Nonequality => assembly.push_str(&neq_arg()),
-            NodeKind::Less => assembly.push_str(&less_arg()),
-            NodeKind::LessOrEqual => assembly.push_str(&less_or_eq_arg()),
-            NodeKind::Add => assembly.push_str(&add_arg()),
-            NodeKind::Sub => assembly.push_str(&sub_arg()),
-            NodeKind::Mul => assembly.push_str(&mul_arg()),
-            NodeKind::Div => assembly.push_str(&div_arg()),
-            _ => {
-                return Err("unexpected node".to_owned());
-            }
+        Tree::Return(t) => {
+            let mut str = generate_assembly(*t)?;
+            str.push_str(&gen_ret());
+            Ok(str)
         }
-        assembly.push_str(&push(Operand::Register(Register::R0)));
-    }
+        Tree::Node(kind, lhs, rhs) => {
+            let mut node_str = String::new();
+            if let NodeKind::Assign = kind {
+                let mut str = String::new();
+                if let Tree::Val { offset } = *lhs {
+                    str.push_str(&generate_val(offset));
+                } else {
+                    return Err(
+                        "The left-hand side value of the assignment is not a variable".to_owned(),
+                    );
+                }
+                str.push_str(&generate_assembly(*rhs)?);
+                str.push_str(&pop_lvar());
+                return Ok(str);
+            }
 
-    Ok(())
+            node_str.push_str(&generate_assembly(*lhs)?);
+            node_str.push_str(&generate_assembly(*rhs)?);
+
+            node_str.push_str(&pop_arg());
+
+            match kind {
+                NodeKind::Equality => node_str.push_str(&eq_arg()),
+                NodeKind::Nonequality => node_str.push_str(&neq_arg()),
+                NodeKind::Less => node_str.push_str(&less_arg()),
+                NodeKind::LessOrEqual => node_str.push_str(&less_or_eq_arg()),
+                NodeKind::Add => node_str.push_str(&add_arg()),
+                NodeKind::Sub => node_str.push_str(&sub_arg()),
+                NodeKind::Mul => node_str.push_str(&mul_arg()),
+                NodeKind::Div => node_str.push_str(&div_arg()),
+                _ => {
+                    return Err("unexpected node".to_owned());
+                }
+            }
+            node_str.push_str(&push(Operand::Register(Register::R0)));
+            Ok(node_str)
+        }
+        _ => Err("Generate Error".to_owned()),
+    }
 }

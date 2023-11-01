@@ -28,16 +28,8 @@ pub fn generate_assembly(tree: Tree) -> Result<String, GenerateError> {
     match tree {
         Tree::None => Ok(String::new()),
         Tree::Int(n) => Ok(push(Operand::Num(n))),
-        Tree::Val { offset } => {
-            let mut str = generate_val(offset);
-            str.push_str(&pop_val());
-            Ok(str)
-        }
-        Tree::Return(t) => {
-            let mut str = generate_assembly(*t)?;
-            str.push_str(&gen_ret());
-            Ok(str)
-        }
+        Tree::Val { offset } => Ok(format!("{}{}", generate_val(offset), pop_val())),
+        Tree::Return(t) => Ok(format!("{}{}", generate_assembly(*t)?, gen_ret())),
         Tree::Node(kind, lhs, rhs) => {
             let mut node_str = String::new();
             if let NodeKind::Assign = kind {

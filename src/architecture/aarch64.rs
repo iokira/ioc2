@@ -315,14 +315,6 @@ fn b_lend(n: usize) -> String {
     format!("\tb Lend{:0width$}\n", n, width = 3)
 }
 
-fn b_lelse(n: usize) -> String {
-    format!("\tb Lelse{:0width$}\n", n, width = 3)
-}
-
-fn b_eq_lbegin(n: usize) -> String {
-    format!("\tb.EQ Lbegin{:0width$}\n", n, width = 3)
-}
-
 fn b_eq_lend(n: usize) -> String {
     format!("\tb.EQ Lend{:0width$}\n", n, width = 3)
 }

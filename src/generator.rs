@@ -33,45 +33,45 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
         Tree::Int(n) => Ok((push(Operand::Num(n)), flow_count)),
         Tree::Val { offset } => Ok((format!("{}{}", generate_val(offset), pop_val()), flow_count)),
         Tree::Return(t) => {
-            let (asm, flow_count) = generate_assembly(*t, flow_count + 1)?;
+            let (asm, flow_count) = generate_assembly(*t, flow_count)?;
             Ok((format!("{}{}", asm, gen_ret()), flow_count))
         }
         Tree::If(expr, stmt) => {
-            let (expr, flow_count) = generate_assembly(*expr, flow_count + 1)?;
-            let (stmt, flow_count) = generate_assembly(*stmt, flow_count + 1)?;
+            let (expr, flow_count) = generate_assembly(*expr, flow_count)?;
+            let (stmt, flow_count) = generate_assembly(*stmt, flow_count)?;
             Ok((
-                format!("{}", &gen_if(&expr, &stmt, flow_count),),
-                flow_count,
+                format!("{}", &gen_if(&expr, &stmt, flow_count + 1),),
+                flow_count + 1,
             ))
         }
         Tree::IfElse(expr, stmt, stmt_else) => {
-            let (expr, flow_count) = generate_assembly(*expr, flow_count + 1)?;
-            let (stmt, flow_count) = generate_assembly(*stmt, flow_count + 1)?;
-            let (stmt_else, flow_count) = generate_assembly(*stmt_else, flow_count + 1)?;
+            let (expr, flow_count) = generate_assembly(*expr, flow_count)?;
+            let (stmt, flow_count) = generate_assembly(*stmt, flow_count)?;
+            let (stmt_else, flow_count) = generate_assembly(*stmt_else, flow_count)?;
             Ok((
-                format!("{}", &gen_if_else(&expr, &stmt, &stmt_else, flow_count)),
-                flow_count,
+                format!("{}", &gen_if_else(&expr, &stmt, &stmt_else, flow_count + 1)),
+                flow_count + 1,
             ))
         }
         Tree::While(expr, stmt) => {
-            let (expr, flow_count) = generate_assembly(*expr, flow_count + 1)?;
-            let (stmt, flow_count) = generate_assembly(*stmt, flow_count + 1)?;
+            let (expr, flow_count) = generate_assembly(*expr, flow_count)?;
+            let (stmt, flow_count) = generate_assembly(*stmt, flow_count)?;
             Ok((
-                format!("{}", gen_while(&expr, &stmt, flow_count)),
-                flow_count,
+                format!("{}", gen_while(&expr, &stmt, flow_count + 1)),
+                flow_count + 1,
             ))
         }
         Tree::For(init_expr, cond_expr, loop_expr, stmt) => {
-            let (init_expr, flow_count) = generate_assembly(*init_expr, flow_count + 1)?;
-            let (cond_expr, flow_count) = generate_assembly(*cond_expr, flow_count + 1)?;
-            let (loop_expr, flow_count) = generate_assembly(*loop_expr, flow_count + 1)?;
-            let (stmt, flow_count) = generate_assembly(*stmt, flow_count + 1)?;
+            let (init_expr, flow_count) = generate_assembly(*init_expr, flow_count)?;
+            let (cond_expr, flow_count) = generate_assembly(*cond_expr, flow_count)?;
+            let (loop_expr, flow_count) = generate_assembly(*loop_expr, flow_count)?;
+            let (stmt, flow_count) = generate_assembly(*stmt, flow_count)?;
             Ok((
                 format!(
                     "{}",
-                    gen_for(&init_expr, &cond_expr, &loop_expr, &stmt, flow_count)
+                    gen_for(&init_expr, &cond_expr, &loop_expr, &stmt, flow_count + 1)
                 ),
-                flow_count,
+                flow_count + 1,
             ))
         }
         Tree::Node(kind, lhs, rhs) => {

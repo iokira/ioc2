@@ -42,6 +42,11 @@ assert 14 "a = 3; b = 5*6 - 8; a + b / 2;"
 assert 15 "row = 3; column=5; row*column;"
 assert 14 "a = 3; b = 5*6 - 8; return a + b / 2;"
 assert 5 "return 5; return8;"
+assert 0 "if(1>0)return 0;return 1;"
+assert 5 "if(3 > 2)return 5; else return 4;"
+assert 4 "i = 1; while(i < 3) i = i*2;"
+assert 10 "for(a = 0; a < 10; a = a + 1)a + 1;"
+assert 121 "a=1;while(a<100)for(i = 0; i < 10; i = i + 1)if(i<5)a=a+1;else a=a+i;a;"
 
 echo OK
 

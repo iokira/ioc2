@@ -40,7 +40,7 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
             let (expr, flow_count) = generate_assembly(*expr, flow_count)?;
             let (stmt, flow_count) = generate_assembly(*stmt, flow_count)?;
             Ok((
-                format!("{}", &gen_if(&expr, &stmt, flow_count + 1),),
+                gen_if(&expr, &stmt, flow_count + 1).to_string(),
                 flow_count + 1,
             ))
         }
@@ -49,7 +49,7 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
             let (stmt, flow_count) = generate_assembly(*stmt, flow_count)?;
             let (stmt_else, flow_count) = generate_assembly(*stmt_else, flow_count)?;
             Ok((
-                format!("{}", &gen_if_else(&expr, &stmt, &stmt_else, flow_count + 1)),
+                gen_if_else(&expr, &stmt, &stmt_else, flow_count + 1).to_string(),
                 flow_count + 1,
             ))
         }
@@ -57,7 +57,7 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
             let (expr, flow_count) = generate_assembly(*expr, flow_count)?;
             let (stmt, flow_count) = generate_assembly(*stmt, flow_count)?;
             Ok((
-                format!("{}", gen_while(&expr, &stmt, flow_count + 1)),
+                gen_while(&expr, &stmt, flow_count + 1).to_string(),
                 flow_count + 1,
             ))
         }
@@ -67,10 +67,7 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
             let (loop_expr, flow_count) = generate_assembly(*loop_expr, flow_count)?;
             let (stmt, flow_count) = generate_assembly(*stmt, flow_count)?;
             Ok((
-                format!(
-                    "{}",
-                    gen_for(&init_expr, &cond_expr, &loop_expr, &stmt, flow_count + 1)
-                ),
+                gen_for(&init_expr, &cond_expr, &loop_expr, &stmt, flow_count + 1).to_string(),
                 flow_count + 1,
             ))
         }

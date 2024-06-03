@@ -24,6 +24,8 @@ pub enum Token {
     Div,
     LParen,
     RParen,
+    OpenBrace,
+    CloseBrace,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, PartialOrd, Ord)]

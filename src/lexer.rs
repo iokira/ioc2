@@ -76,6 +76,8 @@ fn tokenize_operator(s: &str) -> Result<(Token, usize), TokenError> {
         "/" => Ok((Token::Div, 1)),
         "(" => Ok((Token::LParen, 1)),
         ")" => Ok((Token::RParen, 1)),
+        "{" => Ok((Token::OpenBrace, 1)),
+        "}" => Ok((Token::CloseBrace, 1)),
         _ => Err(TokenError::TokenizeError),
     }
 }
@@ -153,11 +155,7 @@ fn expect_whitespace(s: &str) -> bool {
 }
 
 fn expect_no_ident_str(s: &str, expect: &str) -> bool {
-    expect_str(s, expect)
-        && !s[expect.len()..]
-            .chars()
-            .next()
-            .is_some_and(is_ident_char)
+    expect_str(s, expect) && !s[expect.len()..].chars().next().is_some_and(is_ident_char)
 }
 
 fn expect_return(s: &str) -> bool {

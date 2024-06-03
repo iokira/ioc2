@@ -47,6 +47,29 @@ assert 5 "if(3 > 2)return 5; else return 4;"
 assert 4 "i = 1; while(i < 3) i = i*2;"
 assert 10 "for(a = 0; a < 10; a = a + 1)a + 1;"
 assert 121 "a=1;while(a<100)for(i = 0; i < 10; i = i + 1)if(i<5)a=a+1;else a=a+i;a;"
+assert 10 "{{{{{{{{{{0;1;2;3;10;}}}}}}}}}}"
+assert 55 "
+num = 0;
+for (i = 1; i <= 10; i = i + 1) {
+    num = num + i;
+}
+return num;
+"
+assert 29 "
+num = 0;
+for (i = 1; i <= 10; i = i + 1) {
+    num = num + 1;
+    if (i == 2) {
+        num = num + 1;
+    } else {
+        num = num + 2;
+    }
+    a = 0;
+    b = 1;
+    c = 2;
+}
+return num;
+"
 
 echo OK
 

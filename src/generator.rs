@@ -77,7 +77,7 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
             for tree in trees {
                 let (str, n) = generate_assembly(tree, count)?;
                 asm = format!("{}{}", asm, str);
-                count += n;
+                count = n;
             }
             Ok((asm, count))
         }

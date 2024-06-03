@@ -32,13 +32,13 @@ fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
                     match tokens[0] {
                         Token::CloseBrace => Ok((vec![], tokens[1..].to_vec())),
                         _ => {
-                            let (go_stmt, tokens) = stmt(tokens[1..].to_vec())?;
+                            let (go_stmt, tokens) = stmt(tokens)?;
                             let (go_trees, tokens) = go(tokens)?;
                             Ok(([vec![go_stmt], go_trees].concat(), tokens))
                         }
                     }
                 }
-                let (stmts, tokens) = go(tokens)?;
+                let (stmts, tokens) = go(tokens[1..].to_vec())?;
                 (Tree::new_block(stmts), tokens)
             }
             _ => {

@@ -26,6 +26,9 @@ fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
             Token::CloseBrace => (Tree::None, tokens[1..].to_vec()),
             Token::OpenBrace => {
                 fn go(tokens: Vec<Token>) -> Result<(Vec<Tree>, Vec<Token>), TreeError> {
+                    if tokens.is_empty() {
+                        return Err(closebrace_error());
+                    }
                     match tokens[0] {
                         Token::CloseBrace => Ok((vec![], tokens[1..].to_vec())),
                         _ => {

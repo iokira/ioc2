@@ -23,6 +23,21 @@ fn stmt(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
             Token::While => parse_while(tokens[1..].to_vec())?,
             Token::For => parse_for(tokens[1..].to_vec())?,
             Token::Return => parse_return(tokens[1..].to_vec())?,
+            Token::CloseBrace => (Tree::None, tokens[1..].to_vec()),
+            Token::OpenBrace => {
+                fn go(tokens: Vec<Token>) -> Result<(Vec<Tree>, Vec<Token>), TreeError> {
+                    match tokens[0] {
+                        Token::CloseBrace => Ok((vec![], tokens[1..].to_vec())),
+                        _ => {
+                            let (go_stmt, tokens) = stmt(tokens[1..].to_vec())?;
+                            let (go_trees, tokens) = go(tokens)?;
+                            Ok(([vec![go_stmt], go_trees].concat(), tokens))
+                        }
+                    }
+                }
+                let (stmts, tokens) = go(tokens)?;
+                (Tree::new_block(stmts), tokens)
+            }
             _ => {
                 let (expr_tree, tokens) = expr(tokens)?;
                 if tokens.is_empty() {
@@ -354,6 +369,10 @@ fn lparen_error() -> TreeError {
 
 fn rparen_error() -> TreeError {
     "expected ')' but disappear".to_owned()
+}
+
+fn closebrace_error() -> TreeError {
+    "expected '}' but disappear".to_owned()
 }
 
 #[cfg(test)]

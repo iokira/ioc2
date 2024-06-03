@@ -23,6 +23,7 @@ pub enum Tree {
     IfElse(Box<Tree>, Box<Tree>, Box<Tree>),
     While(Box<Tree>, Box<Tree>),
     For(Box<Tree>, Box<Tree>, Box<Tree>, Box<Tree>),
+    Block(Vec<Tree>),
     Node(NodeKind, Box<Tree>, Box<Tree>),
 }
 
@@ -64,5 +65,9 @@ impl Tree {
             Box::new(loop_expr),
             Box::new(stmt),
         )
+    }
+
+    pub fn new_block(stmts: Vec<Tree>) -> Tree {
+        Tree::Block(stmts)
     }
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IOC=./target/debug/ioc2
+IOC=./target/release/ioc2
 MAINC=./source/main.c
 MAINS=./source/main.s
 MAIN=./source/main

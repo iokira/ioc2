@@ -10,7 +10,7 @@ pub fn generator(trees: Vec<Tree>, ident_count: usize) -> Result<String, Generat
     asm.push_str(&main_func());
     asm.push_str(&memory_allocate(ident_count * 8));
 
-    let mut flow_count = 1;
+    let mut flow_count = 0;
     for tree in trees {
         let (str, count) = generate_assembly(tree, flow_count)?;
         flow_count = count;

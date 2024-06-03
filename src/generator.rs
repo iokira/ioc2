@@ -71,6 +71,16 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
                 flow_count + 1,
             ))
         }
+        Tree::Block(trees) => {
+            let mut asm = String::new();
+            let mut count = flow_count;
+            for tree in trees {
+                let (str, n) = generate_assembly(tree, count)?;
+                asm = format!("{}{}", asm, str);
+                count += n;
+            }
+            Ok((asm, count))
+        }
         Tree::Node(kind, lhs, rhs) => {
             let mut node_str = String::new();
             if let NodeKind::Assign = kind {

@@ -326,9 +326,8 @@ fn b_eq_lelse(n: usize) -> String {
 
 pub fn gen_if(expr: &str, stmt: &str, n: usize) -> String {
     format!(
-        "{}{}\tcmp {}, {}\n{}{}{}",
+        "{}\tcmp {}, {}\n{}{}{}",
         expr,
-        pop(Operand::Register(Register::R0)),
         Operand::Register(Register::R0),
         Operand::Num(0),
         b_eq_lend(n),
@@ -339,9 +338,8 @@ pub fn gen_if(expr: &str, stmt: &str, n: usize) -> String {
 
 pub fn gen_if_else(expr: &str, stmt: &str, stmt_else: &str, n: usize) -> String {
     format!(
-        "{}{}\tcmp {}, {}\n{}{}{}{}{}{}",
+        "{}\tcmp {}, {}\n{}{}{}{}{}{}",
         expr,
-        pop(Operand::Register(Register::R0)),
         Operand::Register(Register::R0),
         Operand::Num(0),
         b_eq_lelse(n),
@@ -355,10 +353,9 @@ pub fn gen_if_else(expr: &str, stmt: &str, stmt_else: &str, n: usize) -> String 
 
 pub fn gen_while(expr: &str, stmt: &str, n: usize) -> String {
     format!(
-        "{}{}{}\tcmp {}, {}\n{}{}{}{}",
+        "{}{}\tcmp {}, {}\n{}{}{}{}",
         lbegin(n),
         expr,
-        pop(Operand::Register(Register::R0)),
         Operand::Register(Register::R0),
         Operand::Num(0),
         b_eq_lend(n),
@@ -370,11 +367,10 @@ pub fn gen_while(expr: &str, stmt: &str, n: usize) -> String {
 
 pub fn gen_for(init_expr: &str, cond_expr: &str, loop_expr: &str, stmt: &str, n: usize) -> String {
     format!(
-        "{}{}{}{}\tcmp {}, {}\n{}{}{}{}{}",
+        "{}{}{}\tcmp {}, {}\n{}{}{}{}{}",
         init_expr,
         lbegin(n),
         cond_expr,
-        pop(Operand::Register(Register::R0)),
         Operand::Register(Register::R0),
         Operand::Num(0),
         b_eq_lend(n),

@@ -107,9 +107,10 @@ pub fn program_epilogue() -> String {
 /// mov r0, rbp(r8)
 /// sub rax, offset
 /// push rax
-pub fn gen_val(offset: usize) -> String {
+pub fn gen_val(name: &str, offset: usize) -> String {
     format!(
-        "{}{}{}",
+        "; {}\n{}{}{}",
+        name,
         mov(
             Operand::Register(Register::R0),
             Operand::Register(Register::R8)

@@ -23,8 +23,8 @@ pub fn generator(trees: Vec<Tree>, ident_count: usize) -> Result<String, Generat
     Ok(asm)
 }
 
-fn generate_val(offset: usize) -> String {
-    gen_val(offset)
+fn generate_val(name: &str, offset: usize) -> String {
+    gen_val(name, offset)
 }
 
 pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize), GenerateError> {
@@ -32,7 +32,7 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
         Tree::None => Ok((String::new(), flow_count)),
         Tree::Int(n) => Ok((push(Operand::Num(n)), flow_count)),
         Tree::Val { name, offset } => Ok((
-            format!("; {}\n{}{}", name, generate_val(offset), pop_val()),
+            format!("{}{}", generate_val(&name, offset), pop_val()),
             flow_count,
         )),
         Tree::Return(t) => {
@@ -88,8 +88,8 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
             let mut node_str = String::new();
             if let NodeKind::Assign = kind {
                 let mut str = String::new();
-                if let Tree::Val { name: _, offset } = *lhs {
-                    str.push_str(&generate_val(offset));
+                if let Tree::Val { name, offset } = *lhs {
+                    str.push_str(&generate_val(&name, offset));
                 } else {
                     return Err(
                         "The left-hand side value of the assignment is not a variable".to_owned(),

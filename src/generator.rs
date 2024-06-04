@@ -31,7 +31,10 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
     match tree {
         Tree::None => Ok((String::new(), flow_count)),
         Tree::Int(n) => Ok((push(Operand::Num(n)), flow_count)),
-        Tree::Val { offset } => Ok((format!("{}{}", generate_val(offset), pop_val()), flow_count)),
+        Tree::Val { name, offset } => Ok((
+            format!("; {}\n{}{}", name, generate_val(offset), pop_val()),
+            flow_count,
+        )),
         Tree::Return(t) => {
             let (asm, flow_count) = generate_assembly(*t, flow_count)?;
             Ok((format!("{}{}", asm, gen_ret()), flow_count))
@@ -85,7 +88,7 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
             let mut node_str = String::new();
             if let NodeKind::Assign = kind {
                 let mut str = String::new();
-                if let Tree::Val { offset } = *lhs {
+                if let Tree::Val { name: _, offset } = *lhs {
                     str.push_str(&generate_val(offset));
                 } else {
                     return Err(

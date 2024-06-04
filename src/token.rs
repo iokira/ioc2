@@ -4,7 +4,7 @@ pub type Int = usize;
 pub enum Token {
     Integer(Int),
     Ident(Ident),
-    Variable { offset: usize },
+    Variable { name: String, offset: usize },
     Return,
     If,
     Else,

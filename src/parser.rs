@@ -201,7 +201,7 @@ fn primary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
     if tokens.is_empty() {
         Err("expect number or block but disappear".to_owned())
     } else {
-        match tokens[0] {
+        match &tokens[0] {
             Token::LParen => {
                 let (expr, tokens) = expr(tokens[1..].to_vec())?;
                 match tokens[0] {
@@ -209,8 +209,10 @@ fn primary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
                     _ => Err("expect ')' but disappear".to_owned()),
                 }
             }
-            Token::Integer(n) => Ok((Tree::new_int(n), tokens[1..].to_vec())),
-            Token::Variable { offset } => Ok((Tree::new_val(offset), tokens[1..].to_vec())),
+            Token::Integer(n) => Ok((Tree::new_int(*n), tokens[1..].to_vec())),
+            Token::Variable { name, offset } => {
+                Ok((Tree::new_val(name, *offset), tokens[1..].to_vec()))
+            }
             _ => Err("expect number or block but disappear".to_owned()),
         }
     }
@@ -400,9 +402,21 @@ column * row;
 
         assert_eq!(
             Ok(vec![
-                Tree::new_tree(NodeKind::Assign, Tree::new_val(8), Tree::new_int(5)),
-                Tree::new_tree(NodeKind::Assign, Tree::new_val(16), Tree::new_int(40)),
-                Tree::new_tree(NodeKind::Mul, Tree::new_val(8), Tree::new_val(16))
+                Tree::new_tree(
+                    NodeKind::Assign,
+                    Tree::new_val("column", 8),
+                    Tree::new_int(5)
+                ),
+                Tree::new_tree(
+                    NodeKind::Assign,
+                    Tree::new_val("row", 16),
+                    Tree::new_int(40)
+                ),
+                Tree::new_tree(
+                    NodeKind::Mul,
+                    Tree::new_val("column", 8),
+                    Tree::new_val("row", 16)
+                )
             ]),
             parser(query)
         );
@@ -592,7 +606,7 @@ column * row;
         assert_eq!(
             Ok(vec![Tree::new_tree(
                 NodeKind::Assign,
-                Tree::new_val(8),
+                Tree::new_val("a", 8),
                 Tree::new_int(123)
             )]),
             parser(query)

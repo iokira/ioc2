@@ -6,13 +6,13 @@ pub fn variable_analysis(tokens: Vec<Token>) -> Result<(Vec<Token>, usize), &'st
     convert_tokens(tokens)
 }
 
-fn extract_ident(tokens: &Vec<Token>) -> Vec<Ident> {
+fn extract_ident(tokens: &[Token]) -> Vec<Ident> {
     if tokens.is_empty() {
         vec![]
     } else if let Token::Ident(ident) = tokens[0].clone() {
-        [vec![ident], extract_ident(&tokens[1..].to_vec())].concat()
+        [vec![ident], extract_ident(&tokens[1..])].concat()
     } else {
-        extract_ident(&tokens[1..].to_vec())
+        extract_ident(&tokens[1..])
     }
 }
 
@@ -35,8 +35,11 @@ fn calc_offset(ident: Ident, idents: &[Ident]) -> Option<usize> {
 
 fn ident2var(token: Token, idents: &[Ident]) -> Result<Token, &'static str> {
     match token {
-        Token::Ident(i) => match calc_offset(i, idents) {
-            Some(n) => Ok(Token::Variable { offset: n }),
+        Token::Ident(i) => match calc_offset(i.clone(), idents) {
+            Some(n) => Ok(Token::Variable {
+                name: i.name,
+                offset: n,
+            }),
             None => Err("unexpected ident"),
         },
         _ => Ok(token),
@@ -80,7 +83,14 @@ mod tests {
 
         assert_eq!(
             Ok((
-                vec![Token::Integer(0), Token::Variable { offset: 8 }, Token::Add],
+                vec![
+                    Token::Integer(0),
+                    Token::Variable {
+                        name: "a".to_owned(),
+                        offset: 8
+                    },
+                    Token::Add
+                ],
                 1
             )),
             variable_analysis(query1)
@@ -210,15 +220,24 @@ mod tests {
         let idents = vec![ident0.clone(), ident1.clone(), ident2.clone()];
 
         assert_eq!(
-            Ok(Token::Variable { offset: 8 }),
+            Ok(Token::Variable {
+                name: "a".to_owned(),
+                offset: 8
+            }),
             ident2var(Token::Ident(ident0), &idents)
         );
         assert_eq!(
-            Ok(Token::Variable { offset: 16 }),
+            Ok(Token::Variable {
+                name: "b".to_owned(),
+                offset: 16
+            }),
             ident2var(Token::Ident(ident1), &idents)
         );
         assert_eq!(
-            Ok(Token::Variable { offset: 24 }),
+            Ok(Token::Variable {
+                name: "c".to_owned(),
+                offset: 24
+            }),
             ident2var(Token::Ident(ident2), &idents)
         );
         assert_eq!(
@@ -254,12 +273,27 @@ mod tests {
             Ok((
                 vec![
                     Token::Integer(0),
-                    Token::Variable { offset: 8 },
-                    Token::Variable { offset: 16 },
+                    Token::Variable {
+                        name: "a".to_owned(),
+                        offset: 8
+                    },
+                    Token::Variable {
+                        name: "b".to_owned(),
+                        offset: 16
+                    },
                     Token::Add,
-                    Token::Variable { offset: 16 },
-                    Token::Variable { offset: 24 },
-                    Token::Variable { offset: 24 },
+                    Token::Variable {
+                        name: "b".to_owned(),
+                        offset: 16
+                    },
+                    Token::Variable {
+                        name: "c".to_owned(),
+                        offset: 24
+                    },
+                    Token::Variable {
+                        name: "c".to_owned(),
+                        offset: 24
+                    },
                     Token::Add,
                 ],
                 3

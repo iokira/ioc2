@@ -17,7 +17,7 @@ pub enum NodeKind {
 pub enum Tree {
     None,
     Int(Int),
-    Val { offset: usize },
+    Val { name: String, offset: usize },
     Return(Box<Tree>),
     If(Box<Tree>, Box<Tree>),
     IfElse(Box<Tree>, Box<Tree>, Box<Tree>),
@@ -38,8 +38,11 @@ impl Tree {
         Tree::Int(num)
     }
 
-    pub fn new_val(offset: usize) -> Tree {
-        Tree::Val { offset }
+    pub fn new_val(name: &str, offset: usize) -> Tree {
+        Tree::Val {
+            name: name.to_owned(),
+            offset,
+        }
     }
 
     pub fn new_return(tree: Tree) -> Tree {

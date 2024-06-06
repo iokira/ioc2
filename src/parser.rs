@@ -210,9 +210,16 @@ fn primary(tokens: Vec<Token>) -> Result<(Tree, Vec<Token>), TreeError> {
                 }
             }
             Token::Integer(n) => Ok((Tree::new_int(*n), tokens[1..].to_vec())),
-            Token::Variable { name, offset } => {
-                Ok((Tree::new_val(name, *offset), tokens[1..].to_vec()))
-            }
+            Token::Variable { name, offset } => match &tokens[1] {
+                Token::LParen => {
+                    if tokens[2] == Token::RParen {
+                        Ok((Tree::new_func(name), tokens[3..].to_vec()))
+                    } else {
+                        Err("expect ')' but disappear".to_owned())
+                    }
+                }
+                _ => Ok((Tree::new_val(name, *offset), tokens[1..].to_vec())),
+            },
             _ => Err("expect number or block but disappear".to_owned()),
         }
     }

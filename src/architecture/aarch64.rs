@@ -380,3 +380,7 @@ pub fn gen_for(init_expr: &str, cond_expr: &str, loop_expr: &str, stmt: &str, n:
         lend(n)
     )
 }
+
+pub fn gen_func(name: &str) -> String {
+    format!("\tbl _{}\n", name)
+}

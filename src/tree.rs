@@ -18,6 +18,7 @@ pub enum Tree {
     None,
     Int(Int),
     Val { name: String, offset: usize },
+    Func { name: String },
     Return(Box<Tree>),
     If(Box<Tree>, Box<Tree>),
     IfElse(Box<Tree>, Box<Tree>, Box<Tree>),
@@ -72,5 +73,11 @@ impl Tree {
 
     pub fn new_block(stmts: Vec<Tree>) -> Tree {
         Tree::Block(stmts)
+    }
+
+    pub fn new_func(name: &str) -> Tree {
+        Tree::Func {
+            name: name.to_owned(),
+        }
     }
 }

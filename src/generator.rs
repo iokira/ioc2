@@ -124,5 +124,6 @@ pub fn generate_assembly(tree: Tree, flow_count: usize) -> Result<(String, usize
             node_str.push_str(&push(Operand::Register(Register::R0)));
             Ok((node_str, flow_count))
         }
+        Tree::Func { name } => Ok((gen_func(&name), flow_count)),
     }
 }

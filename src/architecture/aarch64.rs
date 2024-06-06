@@ -59,7 +59,7 @@ pub fn main_func() -> String {
 /// sub rsp(r9), $bytes
 pub fn memory_allocate(bytes: usize) -> String {
     format!(
-        "{}{}{}{}{}",
+        "; memory allocate\n{}{}{}{}{}",
         mov(
             Operand::Register(Register::R8),
             Operand::Register(Register::R13)
@@ -86,7 +86,10 @@ fn str(rd: Operand, rn: Operand) -> String {
 }
 
 pub fn stmt_epilogue() -> String {
-    pop(Operand::Register(Register::R0))
+    format!(
+        "; statement epilogue\n{}",
+        pop(Operand::Register(Register::R0))
+    )
 }
 
 /// mov rsp(r9), rbp(r8)
@@ -94,7 +97,7 @@ pub fn stmt_epilogue() -> String {
 /// ret
 pub fn program_epilogue() -> String {
     format!(
-        "{}{}{}",
+        "; program epilogue\n{}{}{}",
         mov(
             Operand::Register(Register::R9),
             Operand::Register(Register::R8)
@@ -109,7 +112,7 @@ pub fn program_epilogue() -> String {
 /// push rax
 pub fn gen_val(name: &str, offset: usize) -> String {
     format!(
-        "; {}\n{}{}{}",
+        "; value: {}\n{}{}{}",
         name,
         mov(
             Operand::Register(Register::R0),
@@ -125,7 +128,7 @@ pub fn gen_val(name: &str, offset: usize) -> String {
 /// push r0
 pub fn pop_val() -> String {
     format!(
-        "{}{}{}",
+        "; pop value\n{}{}{}",
         pop(Operand::Register(Register::R0)),
         ldr(
             Operand::Register(Register::R0),
@@ -141,7 +144,7 @@ pub fn pop_val() -> String {
 /// push r1
 pub fn pop_lvar() -> String {
     format!(
-        "{}{}{}{}",
+        "; pop lvar\n{}{}{}{}",
         pop(Operand::Register(Register::R1)),
         pop(Operand::Register(Register::R0)),
         str(
@@ -156,7 +159,7 @@ pub fn pop_lvar() -> String {
 /// pop r0
 pub fn pop_arg() -> String {
     format!(
-        "{}{}",
+        "; pop arg\n{}{}",
         pop(Operand::Register(Register::R1)),
         pop(Operand::Register(Register::R0))
     )
@@ -167,7 +170,7 @@ pub fn pop_arg() -> String {
 /// str r0, r9
 pub fn push(rd: Operand) -> String {
     format!(
-        "{}{}{}",
+        "; push\n{}{}{}",
         sub(Operand::Register(Register::R9), Operand::Num(8)),
         mov(Operand::Register(Register::R1), rd),
         str(
@@ -181,7 +184,7 @@ pub fn push(rd: Operand) -> String {
 /// add r9, #8
 pub fn pop(rd: Operand) -> String {
     format!(
-        "{}{}",
+        "; pop\n{}{}",
         ldr(rd, Operand::Address(Register::R9)),
         add(Operand::Register(Register::R9), Operand::Num(8))
     )
@@ -281,7 +284,7 @@ fn less_or_eq(rd: Operand, rn: Operand) -> String {
 
 pub fn gen_ret() -> String {
     format!(
-        "{}{}{}{}",
+        "; return\n{}{}{}{}",
         pop(Operand::Register(Register::R0)),
         mov(
             Operand::Register(Register::R9),

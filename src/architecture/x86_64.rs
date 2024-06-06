@@ -54,7 +54,7 @@ pub fn main_func() -> String {
 /// sub rsp, #bytes
 pub fn memory_allocate(bytes: usize) -> String {
     format!(
-        "{}{}{}",
+        "; memory allocate\n{}{}{}",
         push(Operand::Register(Register::R5)),
         mov(
             Operand::Register(Register::R5),
@@ -65,7 +65,10 @@ pub fn memory_allocate(bytes: usize) -> String {
 }
 
 pub fn stmt_epilogue() -> String {
-    pop(Operand::Register(Register::R0))
+    format!(
+        "; statement epilogue\n{}",
+        pop(Operand::Register(Register::R0))
+    )
 }
 
 /// mov rsp, rbp
@@ -73,7 +76,7 @@ pub fn stmt_epilogue() -> String {
 /// ret
 pub fn program_epilogue() -> String {
     format!(
-        "{}{}{}",
+        "; program epilogue\n{}{}{}",
         mov(
             Operand::Register(Register::R6),
             Operand::Register(Register::R5)
@@ -86,9 +89,10 @@ pub fn program_epilogue() -> String {
 /// mov rax, rbp
 /// sub rax, offset
 /// push rax
-pub fn gen_val(offset: usize) -> String {
+pub fn gen_val(name: &str, offset: usize) -> String {
     format!(
-        "{}{}{}",
+        "; value: {}\n{}{}{}",
+        name,
         mov(
             Operand::Register(Register::R0),
             Operand::Register(Register::R5)
@@ -103,7 +107,7 @@ pub fn gen_val(offset: usize) -> String {
 /// push r0
 pub fn pop_val() -> String {
     format!(
-        "{}{}{}",
+        "; pop value\n{}{}{}",
         pop(Operand::Register(Register::R0)),
         mov(
             Operand::Register(Register::R0),
@@ -119,7 +123,7 @@ pub fn pop_val() -> String {
 /// push r1
 pub fn pop_lvar() -> String {
     format!(
-        "{}{}{}{}",
+        ";pop lvar\n{}{}{}{}",
         pop(Operand::Register(Register::R1)),
         pop(Operand::Register(Register::R0)),
         mov(
@@ -134,7 +138,7 @@ pub fn pop_lvar() -> String {
 /// pop r0
 pub fn pop_arg() -> String {
     format!(
-        "{}{}",
+        "; pop arg\n{}{}",
         pop(Operand::Register(Register::R1)),
         pop(Operand::Register(Register::R0))
     )
@@ -244,7 +248,7 @@ fn less_or_eq(rd: Operand, rn: Operand) -> String {
 
 pub fn gen_ret() -> String {
     format!(
-        "{}{}{}{}",
+        "; return\n{}{}{}{}",
         pop(Operand::Register(Register::R0)),
         mov(
             Operand::Register(Register::R6),

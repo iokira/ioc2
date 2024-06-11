@@ -12,6 +12,10 @@ pub enum Register {
     R9,
     /// sp
     R13,
+    /// FP
+    R29,
+    /// LR
+    R30,
 }
 
 pub enum Operand {
@@ -28,6 +32,8 @@ impl fmt::Display for Register {
             Register::R8 => "x8",
             Register::R9 => "x9",
             Register::R13 => "sp",
+            Register::R29 => "x29",
+            Register::R30 => "x30",
         };
         write!(f, "{}", name)
     }
@@ -83,6 +89,14 @@ fn ldr(rd: Operand, rn: Operand) -> String {
 
 fn str(rd: Operand, rn: Operand) -> String {
     format!("\tstr {}, {}\n", rd, rn)
+}
+
+fn ldp(rd: Operand, rn: Operand) -> String {
+    format!("\tldp {}, {}, [sp], 16\n", rd, rn)
+}
+
+fn stp(rd: Operand, rn: Operand) -> String {
+    format!("\tstp {}, {}, [sp, -16]!\n", rd, rn)
 }
 
 pub fn stmt_epilogue() -> String {
@@ -385,5 +399,21 @@ pub fn gen_for(init_expr: &str, cond_expr: &str, loop_expr: &str, stmt: &str, n:
 }
 
 pub fn gen_func(name: &str) -> String {
-    format!("\tbl _{}\n", name)
+    format!(
+        "; func: {}\n{}{}\tbl _{}\n{}",
+        name,
+        stp(
+            Operand::Register(Register::R29),
+            Operand::Register(Register::R30)
+        ),
+        mov(
+            Operand::Register(Register::R29),
+            Operand::Register(Register::R13)
+        ),
+        name,
+        ldp(
+            Operand::Register(Register::R29),
+            Operand::Register(Register::R30)
+        )
+    )
 }

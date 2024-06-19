@@ -60,12 +60,11 @@ pub fn main_func() -> String {
 
 /// mov rbp(r8), sp(r13)
 /// mov rsp(r9), sp(r13)
-/// push rbp(r8)
-/// mov rbp(r8), rsp(r9)
+/// push rbp(r9)
 /// sub rsp(r9), $bytes
 pub fn memory_allocate(bytes: usize) -> String {
     format!(
-        "; memory allocate\n{}{}{}{}{}",
+        "; memory allocate\n{}{}{}{}",
         mov(
             Operand::Register(Register::R8),
             Operand::Register(Register::R13)
@@ -74,11 +73,7 @@ pub fn memory_allocate(bytes: usize) -> String {
             Operand::Register(Register::R9),
             Operand::Register(Register::R13)
         ),
-        push(Operand::Register(Register::R8)),
-        mov(
-            Operand::Register(Register::R8),
-            Operand::Register(Register::R9)
-        ),
+        push(Operand::Register(Register::R9)),
         sub(Operand::Register(Register::R9), Operand::Num(bytes))
     )
 }
